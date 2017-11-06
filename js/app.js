@@ -43,41 +43,25 @@ const initialLocations = [
   }
 ];
 
-var Location = function(data) {
-    this.title = data.title;
-    this.location = data.location;
-    this.showOnMap = ko.observable(true);
-};
-
 function ViewModel() {
   var self = this;
-  self.locations = ko.observableArray([]);
+  self.markers = ko.observableArray([]);
 
-  initialLocations.forEach(function(locationItem) {
-    self.locations.push(new Location(locationItem));
-  });
-
-  self.animateMapMarker = function() {
-    toggleBounce(this.marker);
-    setTimeout(toggleBounce, 2000, this.marker);
-  };
-
-  self.addMarker = function(locationItem) {
-    // Create a marker for a location.
-    locationItem.marker = new google.maps.Marker({
-      position: locationItem.location,
-      title: locationItem.title,
-      map: map,
-      animation: google.maps.Animation.DROP
+  self.initializeMarkers = function() {
+    initialLocations.forEach(function(data) {
+      self.markers.push(new google.maps.Marker({
+        position: data.location,
+        title: data.title,
+        map: map,
+        animation: google.maps.Animation.DROP
+      }));
     });
   };
 
-  self.addMarkers = function() {
-    self.locations().forEach(function(locationItem) {
-      self.addMarker(locationItem);
-    });
+  self.animateMarker = function() {
+    toggleBounce(this);
+    setTimeout(toggleBounce, 2000, this);
   };
-
 };
 
 var locationViewModel = new ViewModel()

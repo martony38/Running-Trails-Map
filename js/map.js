@@ -10,8 +10,8 @@ function initMap() {
       mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain']
     }
   });
-  locationViewModel.addMarkers()
-  showLocations(locationViewModel.locations())
+  locationViewModel.initializeMarkers()
+  showLocations(locationViewModel.markers())
 };
 
 function toggleBounce(marker) {
@@ -23,11 +23,11 @@ function toggleBounce(marker) {
 };
 
 // This function will loop through the markers array and display them all.
-function showLocations(locations) {
+function showLocations(markers) {
   var bounds = new google.maps.LatLngBounds();
-  locations.forEach(function(location) {
+  markers.forEach(function(marker) {
     // Extend the boundaries of the map for each marker.
-    bounds.extend(location.marker.position);
+    bounds.extend(marker.position);
   });
   map.fitBounds(bounds);
 };
