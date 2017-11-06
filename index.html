@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neighborhood Map</title>
+  <!-- Bootstrap -->
+  <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link href="css/app.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container-fluid full-height">
+    <div class="row full-height">
+      <div class="col-md-3">
+        <h1>Locations</h1>
+        <ul data-bind="foreach: locations">
+          <li data-bind="text: title, click: $parent.animateMapMarker"></li>
+        </ul>
+      </div>
+      <div class="col-md-9 full-height">
+        <div id="map"></div>
+      </div>
+    </div>
+  </div>
+  <script src="node_modules/jquery/dist/jquery.min.js"></script>
+  <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="node_modules/knockout/build/output/knockout-latest.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/app.js"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCsq-cspqC3kPEhlTasMA8DPDeTfCaoSSA&v=3&callback=initMap"></script>  
+</body>
+</html>
