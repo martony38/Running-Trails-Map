@@ -1,3 +1,7 @@
+// Most of the code below is directly taken or inspired from the Udacity
+// Google Maps API course repository: https://github.com/udacity/ud864
+
+// Create a global map variable
 var map;
 
 // Callback when google maps API finish to load asynchronously
@@ -22,12 +26,22 @@ function toggleBounce(marker) {
   }
 };
 
-// This function will loop through the markers array and display them all.
+function animateMarker(marker) {
+  toggleBounce(marker);
+  setTimeout(toggleBounce, 2000, marker);
+};
+
+// This function will loop through the markers array, add click events and
+// resize the map boundaries to display them all.
 function showLocations(markers) {
   var bounds = new google.maps.LatLngBounds();
   markers.forEach(function(marker) {
     // Extend the boundaries of the map for each marker.
     bounds.extend(marker.position);
+    marker.addListener('click', function() {
+      animateMarker(this);
+      //populateInfoWindow(this, largeInfowindow);
+    });
   });
   map.fitBounds(bounds);
 };

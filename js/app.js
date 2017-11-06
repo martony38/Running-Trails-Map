@@ -47,6 +47,7 @@ function ViewModel() {
   var self = this;
   self.markers = ko.observableArray([]);
 
+  // Create Markers
   self.initializeMarkers = function() {
     initialLocations.forEach(function(data) {
       self.markers.push(new google.maps.Marker({
@@ -59,8 +60,7 @@ function ViewModel() {
   };
 
   self.animateMarker = function() {
-    toggleBounce(this);
-    setTimeout(toggleBounce, 2000, this);
+    animateMarker(this);
   };
 };
 
