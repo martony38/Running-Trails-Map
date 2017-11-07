@@ -46,7 +46,23 @@ const initialLocations = [
 function ViewModel() {
   var self = this;
   self.markers = ko.observableArray([]);
-  self.currentMarker = ko.observable(null);
+  self.filter = ko.observable(null);
+  self.filteredMarkers = ko.computed(function () {
+    if (self.filter() === null) {
+      return self.markers();
+    } else {
+      var searchResults = []
+      self.markers().forEach(function(marker) {
+        if (marker.title.toLowerCase().search(self.filter().toLowerCase()) !== -1) {
+          searchResults.push(marker)
+          marker.setMap(googleMaps.map)
+        } else {
+          marker.setMap(null);
+        }
+      });
+      return searchResults;
+    }
+  });
 
   // Create Markers
   self.initializeMarkers = function() {
@@ -61,7 +77,6 @@ function ViewModel() {
   };
 
   self.setCurrentMarker = function() {
-    self.currentMarker(this);
     googleMaps.displaySelectedLocation(this);
   };
 

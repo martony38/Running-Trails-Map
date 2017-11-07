@@ -13,8 +13,9 @@
   <div class="container-fluid full-height">
     <div class="row full-height">
       <div class="col-md-3">
+        <input data-bind="textInput: filter">
         <h1>Locations</h1>
-        <ul data-bind="foreach: markers">
+        <ul data-bind="foreach: filteredMarkers">
           <li data-bind="text: title, click: $parent.setCurrentMarker"></li>
         </ul>
       </div>
