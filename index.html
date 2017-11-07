@@ -13,8 +13,13 @@
   <div class="container-fluid full-height">
     <div class="row full-height">
       <div class="col-md-3">
-        <input data-bind="textInput: filter">
         <h1>Locations</h1>
+        <div class="input-group">
+          <input data-bind="textInput: filter" type="text" class="form-control" placeholder="Filter locations by name" aria-describedby="basic-addon2">
+          <span class="input-group-addon" id="basic-addon2">
+            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Filter
+          </span>
+        </div>
         <ul data-bind="foreach: filteredMarkers">
           <li data-bind="text: title, click: $parent.setCurrentMarker"></li>
         </ul>
