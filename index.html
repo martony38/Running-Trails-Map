@@ -15,7 +15,7 @@
       <div class="col-md-3">
         <h1>Locations</h1>
         <ul data-bind="foreach: markers">
-          <li data-bind="text: title, click: $parent.animateMarker"></li>
+          <li data-bind="text: title, click: $parent.setCurrentMarker"></li>
         </ul>
       </div>
       <div class="col-md-9 full-height">
@@ -28,6 +28,6 @@
   <script src="node_modules/knockout/build/output/knockout-latest.js"></script>
   <script src="js/map.js"></script>
   <script src="js/app.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCsq-cspqC3kPEhlTasMA8DPDeTfCaoSSA&v=3&callback=initMap"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCsq-cspqC3kPEhlTasMA8DPDeTfCaoSSA&v=3&callback=googleMaps.init"></script>
 </body>
 </html>

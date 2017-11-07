@@ -46,6 +46,7 @@ const initialLocations = [
 function ViewModel() {
   var self = this;
   self.markers = ko.observableArray([]);
+  self.currentMarker = ko.observable(null);
 
   // Create Markers
   self.initializeMarkers = function() {
@@ -53,14 +54,19 @@ function ViewModel() {
       self.markers.push(new google.maps.Marker({
         position: data.location,
         title: data.title,
-        map: map,
+        map: googleMaps.map,
         animation: google.maps.Animation.DROP
       }));
     });
   };
 
-  self.animateMarker = function() {
-    animateMarker(this);
+  self.setCurrentMarker = function() {
+    self.currentMarker(this);
+    googleMaps.displaySelectedLocation(this);
+  };
+
+  self.displayMarker = function() {
+    googleMaps.displaySelectedLocation(this);
   };
 };
 
