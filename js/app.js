@@ -47,11 +47,13 @@ function ViewModel() {
   var self = this;
   self.markers = ko.observableArray([]);
   self.filter = ko.observable(null);
+
+  // Filter markers.
   self.filteredMarkers = ko.computed(function () {
+    var searchResults = []
     if (self.filter() === null) {
-      return self.markers();
+      searchResults = self.markers()
     } else {
-      var searchResults = []
       self.markers().forEach(function(marker) {
         if (marker.title.toLowerCase().search(self.filter().toLowerCase()) !== -1) {
           searchResults.push(marker)
@@ -60,28 +62,52 @@ function ViewModel() {
           marker.setMap(null);
         }
       });
-      return searchResults;
     }
+    // Sort markers alphabetically by title.
+    return searchResults.sort(function (left, right) {
+      return left.title == right.title ? 0 : (left.title < right.title ? -1 : 1)
+    });
   });
 
-  // Create Markers
+  // Create default markers
   self.initializeMarkers = function() {
     initialLocations.forEach(function(data) {
-      self.markers.push(new google.maps.Marker({
-        position: data.location,
-        title: data.title,
-        map: googleMaps.map,
-        animation: google.maps.Animation.DROP
-      }));
+      self.addMarker(data)
     });
   };
 
-  self.setCurrentMarker = function() {
-    googleMaps.displaySelectedLocation(this);
+  self.alreadyExist = function(data, markerList) {
+    // Check if there is already a marker at this location.
+    var newCoords = new google.maps.LatLng(data.location.lat, data.location.lng)
+    return markerList.some(function(marker) {
+      var markerCoords = new google.maps.LatLng(marker.getPosition().lat(),marker.getPosition().lng())
+      return google.maps.geometry.spherical.computeDistanceBetween(markerCoords,newCoords) < 1.0;
+    });
+  }
+
+  self.addNewMarker = function(data) {
+    // Add a new marker to markers observable Array.
+    var newMarker = new google.maps.Marker({
+      position: data.location,
+      title: data.title,
+      map: googleMaps.map,
+      animation: google.maps.Animation.DROP
+    });
+    self.markers.push(newMarker);
+    return newMarker;
+  };
+
+  self.addMarker = function(data) {
+    // Add a marker if there is not already one at this location.
+    if (self.alreadyExist(data, self.markers())) {
+      return null
+    } else {
+      return self.addNewMarker(data)
+    };
   };
 
   self.displayMarker = function() {
-    googleMaps.displaySelectedLocation(this);
+    googleMaps.displayOnMap(this);
   };
 };
 
