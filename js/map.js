@@ -157,17 +157,18 @@ function populateInfoWindow(marker) {
             content += '<h1>' + place.name + '</h1>';
           };
           if (place.description) {
-            content += '<div class="description">' + place.description + '</p>';
+            content += '<p class="description bg-primary text-justify">' + place.description + '</p>';
           };
           $.each(place.activities, function(index, activity) {
             console.log(activity);
             if (activity.activity_type_name == 'hiking' || activity.activity_type_name == 'mountain biking') {
               content += '<div class="trail-type">Trail type: ' + activity.activity_type_name + '</div>'
               content += '<div class="trail-length">Trail length: ' + activity.length + ' miles</div>'
-              content += '<div class="description">' + replaceAll(activity.description, '&lt;br /&gt;<br />', '') + '</div>';
+              content += '<p class="description bg-info text-justify">' + replaceAll(activity.description, '&lt;br /&gt;<br />', '') + '</p>';
               content += '<a class="btn btn-default btn-xs" href=' + activity.url + '>More info</a>';
             };
           });
+          content += '<div><small>Copyright 2012 TrailAPI.<small><div>'
         };
       };
     });
