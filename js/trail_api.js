@@ -15,8 +15,7 @@ function getTrails(location, activity) {
         location: {
           lat: trail.lat,
           lng: trail.lon
-        },
-        description: trail.description
+        }
       };
       const marker = locationViewModel.addMarker(data);
       if (marker !== null) {
