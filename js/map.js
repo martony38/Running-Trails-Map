@@ -27,7 +27,7 @@ var googleMaps = {
       // Show message finding current location.
       $('.message').text('Finding current location... Please wait.');
       $('.message').css('display', 'inherit');
-      navigator.geolocation.getCurrentPosition(function(position) {
+      navigator.geolocation.getCurrentPosition(function success(position) {
         // Show location found message.
         $('.message').text('Location found. Finding nearby trails...');
         userLocation.lat = position.coords.latitude;
@@ -38,29 +38,25 @@ var googleMaps = {
 
         // Fill database with trails
         googleMaps.getNearbyTrails(userLocation);
-      }, function() {
-        $('.message').toggleClass('alert-info');
-        $('.message').toggleClass('alert-danger');
-        $('.message').text('The Geolocation service failed. Setting map to default location.');
-
-        // Fill database with trails
-        googleMaps.getNearbyTrails(userLocation);
-        $('.message').toggleClass('alert-info');
-        $('.message').toggleClass('alert-danger');
-        $('.message').text('Finding nearby trails...');
+      }, function error() {
+        // Show location not found message.
+        googleMaps.displayMessage('The Geolocation service failed. Setting map to default location.', userLocation)
       });
     } else {
       // Show browser doesn't support Geolocation message
-      $('.message').toggleClass('alert-info');
-      $('.message').toggleClass('alert-danger');
-      $('.message').text('Your browser doesn\'t support geolocation. Setting map to default location.');
-
-      // Fill database with trails
-      googleMaps.getNearbyTrails(userLocation);
-      $('.message').toggleClass('alert-info');
-      $('.message').toggleClass('alert-danger');
-      $('.message').text('Finding nearby trails...');
+      googleMaps.displayMessage('Your browser doesn\'t support geolocation. Setting map to default location.', userLocation);
     }
+  },
+  displayMessage(msg, userLocation) {
+    googleMaps.toggleMessage(msg);
+    // Fill database with trails
+    googleMaps.getNearbyTrails(userLocation);
+    googleMaps.toggleMessage('Finding nearby trails...');
+  },
+  toggleMessage(msg) {
+    $('.message').toggleClass('alert-info');
+    $('.message').toggleClass('alert-danger');
+    $('.message').text(msg);
   },
   getNearbyTrails(location) {
     getTrails(location, 'hiking');
@@ -84,13 +80,16 @@ var googleMaps = {
   },
   // Add click events to markers and adjust the map boundaries to display
   // them all.
-  initializeMap(markers) {
-    markers.forEach(function(marker) {
+  initializeMarkers(locations) {
+    locations.forEach(function(data) {
+      const marker = locationViewModel.addMarker(data);
+      if (marker !== null) {
       // Extend the boundaries of the map for each marker.
-      googleMaps.bounds.extend(marker.position);
-      marker.addListener('click', function() {
-        googleMaps.displayOnMap(this);
-      });
+        googleMaps.bounds.extend(marker.position);
+        marker.addListener('click', function() {
+          googleMaps.displayOnMap(this);
+        });
+      }
     });
     this.map.fitBounds(this.bounds);
   }

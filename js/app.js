@@ -1,4 +1,4 @@
-const initialLocations = [
+const defaultLocations = [
   {
     title: 'Park Ave Penthouse',
     location: {
@@ -68,13 +68,6 @@ function ViewModel() {
       return left.title == right.title ? 0 : (left.title < right.title ? -1 : 1);
     });
   });
-
-  // Create default markers
-  self.initializeMarkers = function() {
-    initialLocations.forEach(function(data) {
-      self.addMarker(data);
-    });
-  };
 
   self.alreadyExist = function(data, markerList) {
     // Check if there is already a marker at this location.

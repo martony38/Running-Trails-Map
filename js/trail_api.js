@@ -9,6 +9,7 @@ function getTrails(location, activity) {
       "x-mashape-key": "il1HptvEQOmshz8iEZicHy0WzmPYp13U09TjsnhvtyO7URBo3N",
     }
   }).done(function(response) {
+    let locations = []
     for (const trail of response.places) {
       const data = {
         title: trail.name,
@@ -17,17 +18,11 @@ function getTrails(location, activity) {
           lng: trail.lon
         }
       };
-      const marker = locationViewModel.addMarker(data);
-      if (marker !== null) {
-        googleMaps.bounds.extend(marker.position);
-        marker.addListener('click', function() {
-          googleMaps.displayOnMap(this);
-        });
-      }
+      locations.push(data)
     }
-    googleMaps.map.fitBounds(googleMaps.bounds);
+    googleMaps.initializeMarkers(locations)
   }).fail(function() {
-      locationViewModel.initializeMarkers();
+      googleMaps.initializeMarkers(defaultLocations);
   }).always(function(){
     $('.message').css('display', 'none');
   });
@@ -72,7 +67,6 @@ function populateInfoWindow(marker) {
       }
     } else {
       content = '<div class="alert alert-info" role="alert">Could not find any trails for this location</div>';
-      console.log('no trail found');
     }
   }).fail(function() {
     content = '<div class="alert alert-danger" role="alert"><strong>Error:</strong> Could not get info for this location</div>';
