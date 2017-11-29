@@ -24,7 +24,7 @@ function getTrails(location, activity) {
   }).fail(function() {
       googleMaps.initializeMarkers(defaultLocations);
   }).always(function(){
-    $('.message').css('display', 'none');
+    locationViewModel.displayMessage(false)
   });
 }
 

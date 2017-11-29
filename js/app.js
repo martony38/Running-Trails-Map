@@ -47,6 +47,9 @@ function ViewModel() {
   const self = this;
   self.markers = ko.observableArray([]);
   self.filter = ko.observable(null);
+  self.messageText = ko.observable(null);
+  self.messageClass = ko.observable('alert-info message alert alert-dismissible');
+  self.displayMessage = ko.observable(false);
 
   // Filter markers.
   self.filteredMarkers = ko.computed(function () {

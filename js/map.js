@@ -22,41 +22,30 @@ var googleMaps = {
     // Set default location to Pittsburgh, PA, USA
     let userLocation = {lat: 40.440624, lng: -79.995888};
 
+    // Display status message
+    locationViewModel.displayMessage(true)
+
     // Try HTML5 geolocation.
     if (navigator.geolocation) {
-      // Show message finding current location.
-      $('.message').text('Finding current location... Please wait.');
-      $('.message').css('display', 'inherit');
+      locationViewModel.messageText('Finding current location... Please wait.');
       navigator.geolocation.getCurrentPosition(function success(position) {
-        // Show location found message.
-        $('.message').text('Location found. Finding nearby trails...');
         userLocation.lat = position.coords.latitude;
         userLocation.lng = position.coords.longitude;
-
-        // Set map center to user location
+        locationViewModel.messageText('Location found. Finding nearby trails...');
         googleMaps.map.setCenter(userLocation);
-
-        // Fill database with trails
         googleMaps.getNearbyTrails(userLocation);
       }, function error() {
-        // Show location not found message.
-        googleMaps.displayMessage('The Geolocation service failed. Setting map to default location.', userLocation)
+        googleMaps.showGeoLocErrorMsg('The Geolocation service failed.');
+        googleMaps.getNearbyTrails(userLocation);
       });
     } else {
-      // Show browser doesn't support Geolocation message
-      googleMaps.displayMessage('Your browser doesn\'t support geolocation. Setting map to default location.', userLocation);
+      this.showGeoLocErrorMsg('Your browser doesn\'t support geolocation.');
+      this.getNearbyTrails(userLocation);
     }
   },
-  displayMessage(msg, userLocation) {
-    googleMaps.toggleMessage(msg);
-    // Fill database with trails
-    googleMaps.getNearbyTrails(userLocation);
-    googleMaps.toggleMessage('Finding nearby trails...');
-  },
-  toggleMessage(msg) {
-    $('.message').toggleClass('alert-info');
-    $('.message').toggleClass('alert-danger');
-    $('.message').text(msg);
+  showGeoLocErrorMsg(msg) {
+    locationViewModel.messageClass(locationViewModel.messageClass().replace('alert-info', 'alert-danger'));
+    locationViewModel.messageText(`${msg} Finding nearby trails using default location...`);
   },
   getNearbyTrails(location) {
     getTrails(location, 'hiking');
