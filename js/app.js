@@ -1,44 +1,44 @@
 const defaultLocations = [
   {
-    title: 'Park Ave Penthouse',
+    title: 'Frick Park',
     location: {
-      lat: 40.7713024,
-      lng: -73.9632393
+      lat: 40.431076,
+      lng: -79.913263
     }
   },
   {
-    title: 'Chelsea Loft',
+    title: 'North Park',
     location: {
-      lat: 40.7444883,
-      lng: -73.9949465
+      lat: 40.598258,
+      lng: -79.998493
     }
   },
   {
-    title: 'Union Square Open Floor Plan',
+    title: 'Boyce Park',
     location: {
-      lat: 40.7347062,
-      lng: -73.9895759
+      lat: 40.463602,
+      lng: -79.741141
     }
   },
   {
-    title: 'East Village Hip Studio',
+    title: 'Laurel Highland Hiking Trail',
     location: {
-      lat: 40.7281777,
-      lng: -73.984377
+      lat: 39.870637,
+      lng: -79.487221
     }
   },
   {
-    title: 'TriBeCa Artsy Bachelor Pad',
+    title: 'South Park',
     location: {
-      lat: 40.7195264,
-      lng: -74.0089934
+      lat: 40.324973,
+      lng: -80.017247
     }
   },
   {
-    title: 'Chinatown Homey Space',
+    title: 'Raccoon Creek State Park',
     location: {
-      lat: 40.7180628,
-      lng: -73.9961237
+      lat: 40.506258,
+      lng: -80.378777
     }
   }
 ];
