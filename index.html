@@ -9,26 +9,45 @@
   <link href="css/app.css" rel="stylesheet">
 </head>
 <body>
-  <div class="container-fluid full-height">
-    <div class="row full-height">
-      <div class="col-md-3">
-        <h1>Running Trails Near You:</h1>
-        <div class="input-group">
-          <input data-bind="textInput: filter" type="text" class="form-control" placeholder="Filter trails by name" aria-describedby="basic-addon2">
-          <span class="input-group-addon" id="basic-addon2">
-            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Filter
-          </span>
-        </div>
-        <ul data-bind="foreach: filteredMarkers">
-          <li data-bind="text: title, click: $parent.displayMarker"></li>
-        </ul>
+  <nav class="navbar navbar-default navbar-static-top no-bottom-margin">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#filter-collapse" aria-expanded="false">
+          <span class="sr-only">Toggle filter</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#"><span data-bind="text: $root.filteredMarkers().length">&nbsp;</span> Running Trails Within 60 Miles</a>
       </div>
-      <div class="col-md-9 full-height">
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="filter-collapse">
+        <form class="navbar-form navbar-right">
+          <div class="input-group">
+            <input data-bind="textInput: filter" type="text" class="form-control trail-filter" placeholder="Filter trails by name" aria-describedby="filter-icon">
+            <span class="input-group-addon" id="filter-icon">
+              <span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Filter
+            </span>
+          </div>
+        </form>
+      </div> <!-- /.navbar-collapse -->
+    </div>
+  </nav>
+  <div class="container-fluid fill-screen">
+    <div class="row full-height">
+      <div data-bind="style: { display: displayMessage() ? 'inherit' : 'none' }" class="col-sm-12">
+        <div data-bind="text: messageText, css: messageClass" role="alert"></div>
+      </div>
+      <div class="col-sm-3 full-height">
+        <div data-bind="foreach: filteredMarkers" class="list-group full-height no-bottom-margin scrollable">
+          <a href="#map" data-bind="text: title, click: $parent.displayMarker, css: { active: $data === $parent.currentMarker() }" class="list-group-item"></a>
+        </div>
+      </div>
+      <div class="col-sm-9 full-height">
         <div id="map"></div>
       </div>
     </div>
   </div>
-  <div data-bind="text: messageText, css: messageClass, style: { display: displayMessage() ? 'inherit' : 'none' }" role="alert"></div>
   <script src="node_modules/jquery/dist/jquery.min.js"></script>
   <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="node_modules/knockout/build/output/knockout-latest.js"></script>

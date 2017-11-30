@@ -1,23 +1,40 @@
-html {
-  height: 100%;
-}
-
-body {
-  height: 100%;
-}
+/* show borders for debugging
+* { border: 1px solid red; }
+*/
 
 #map {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+}
+
+.no-bottom-margin {
+  margin-bottom: 0px;
 }
 
 .full-height {
   height: 100%;
+  padding-right: 0px;
+  padding-left: 0px;
 }
 
-.message {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: none;
+.reduced-margin {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.scrollable {
+  max-height: 100vh;
+  overflow: scroll;
+}
+
+@media screen and (min-width: 768px) {
+  .fill-screen {
+    height: calc(100vh - 51px);
+  }
+  #map {
+    height: 100%;
+  }
+  .navbar-form .input-group>.form-control.trail-filter {
+    width: 360px;
+  }
 }

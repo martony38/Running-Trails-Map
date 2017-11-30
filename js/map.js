@@ -76,6 +76,7 @@ var googleMaps = {
       // Extend the boundaries of the map for each marker.
         googleMaps.bounds.extend(marker.position);
         marker.addListener('click', function() {
+          locationViewModel.currentMarker(this);
           googleMaps.displayOnMap(this);
         });
       }

@@ -48,8 +48,9 @@ function ViewModel() {
   self.markers = ko.observableArray([]);
   self.filter = ko.observable(null);
   self.messageText = ko.observable(null);
-  self.messageClass = ko.observable('alert-info message alert alert-dismissible');
+  self.messageClass = ko.observable('alert-info alert reduced-margin');
   self.displayMessage = ko.observable(false);
+  self.currentMarker = ko.observable(null);
 
   // Filter markers.
   self.filteredMarkers = ko.computed(function () {
@@ -103,7 +104,10 @@ function ViewModel() {
   };
 
   self.displayMarker = function() {
+    self.currentMarker(this);
     googleMaps.displayOnMap(this);
+    // allow default behavior (go to the #map div).
+    return true;
   };
 }
 
