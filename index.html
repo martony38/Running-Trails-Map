@@ -40,7 +40,7 @@
       </div>
       <div class="col-sm-3 full-height">
         <div data-bind="foreach: filteredMarkers" class="list-group full-height no-bottom-margin scrollable">
-          <a href="#map" data-bind="text: title, click: $parent.displayMarker, css: { active: $data === $parent.currentMarker() }" class="list-group-item"></a>
+          <a href="#map" data-bind="text: title, click: $parent.displayMarker, scrollTo: $data === $parent.currentMarker(), css: { active: $data === $parent.currentMarker() }" class="list-group-item"></a>
         </div>
       </div>
       <div class="col-sm-9 full-height">

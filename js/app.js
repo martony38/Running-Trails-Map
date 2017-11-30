@@ -115,3 +115,24 @@ const locationViewModel = new ViewModel();
 
 // Activate knockout.js
 ko.applyBindings(locationViewModel);
+
+ko.bindingHandlers.scrollTo = {
+  // Usage: data-bind="scrollTo: boolean".
+  // If true and element outside of its parent div, scroll up (or down
+  // depending on the position) to the bound element.
+  // Inspired from https://www.snip2code.com/Snippet/54357/ScrollTo-binding-for-knockout
+  update: function(element, valueAccessor) {
+    const valueUnwrapped = ko.unwrap(valueAccessor());
+    if (valueUnwrapped == true) {
+      const scrollParent = $(element).closest("div");
+      const elementTop = $(element).position().top + scrollParent.scrollTop();
+      const elementBottom = elementTop + $(element).outerHeight();
+      if (scrollParent.scrollTop() > elementTop) {
+        scrollParent.scrollTop(elementTop);
+      }
+      else if (elementBottom > scrollParent.scrollTop() + scrollParent.height()) {
+        scrollParent.scrollTop(elementBottom - scrollParent.height());
+      }
+    }
+  }
+};
