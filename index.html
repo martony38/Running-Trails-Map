@@ -37,7 +37,7 @@
   <div class="container-fluid fill-screen">
     <div class="row full-height">
       <div data-bind="style: { display: displayMessage() ? 'inherit' : 'none' }" class="col-sm-12">
-        <div data-bind="text: messageText, css: messageClass" role="alert"></div>
+        <div class="alert reduced-margin" data-bind="text: messageText, css: messageClass" role="alert"></div>
       </div>
       <div class="col-sm-3 full-height">
         <div data-bind="foreach: filteredMarkers" class="list-group full-height no-bottom-margin scrollable">

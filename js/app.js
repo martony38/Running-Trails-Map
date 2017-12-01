@@ -3,7 +3,7 @@ function ViewModel() {
   self.markers = ko.observableArray([]);
   self.filter = ko.observable(null);
   self.messageText = ko.observable(null);
-  self.messageClass = ko.observable('alert-info alert reduced-margin');
+  self.messageClass = ko.observable(null);
   self.displayMessage = ko.observable(false);
   self.currentMarker = ko.observable(null);
 

@@ -27,6 +27,7 @@ var googleMaps = {
 
     // Try HTML5 geolocation.
     if (navigator.geolocation) {
+      locationViewModel.messageClass('alert-info');
       locationViewModel.messageText('Finding current location... Please wait.');
       navigator.geolocation.getCurrentPosition(function success(position) {
         userLocation.lat = position.coords.latitude;
@@ -44,7 +45,7 @@ var googleMaps = {
     }
   },
   showGeoLocErrorMsg(msg) {
-    locationViewModel.messageClass(locationViewModel.messageClass().replace('alert-info', 'alert-danger'));
+    locationViewModel.messageClass('alert-danger');
     locationViewModel.messageText(`${msg} Finding nearby trails using default location...`);
   },
   getNearbyTrails(location) {
