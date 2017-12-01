@@ -1,48 +1,3 @@
-const defaultLocations = [
-  {
-    title: 'Frick Park',
-    location: {
-      lat: 40.431076,
-      lng: -79.913263
-    }
-  },
-  {
-    title: 'North Park',
-    location: {
-      lat: 40.598258,
-      lng: -79.998493
-    }
-  },
-  {
-    title: 'Boyce Park',
-    location: {
-      lat: 40.463602,
-      lng: -79.741141
-    }
-  },
-  {
-    title: 'Laurel Highland Hiking Trail',
-    location: {
-      lat: 39.870637,
-      lng: -79.487221
-    }
-  },
-  {
-    title: 'South Park',
-    location: {
-      lat: 40.324973,
-      lng: -80.017247
-    }
-  },
-  {
-    title: 'Raccoon Creek State Park',
-    location: {
-      lat: 40.506258,
-      lng: -80.378777
-    }
-  }
-];
-
 function ViewModel() {
   const self = this;
   self.markers = ko.observableArray([]);
@@ -96,11 +51,7 @@ function ViewModel() {
 
   self.addMarker = function(data) {
     // Add a marker if there is not already one at this location.
-    if (self.alreadyExist(data, self.markers())) {
-      return null;
-    } else {
-      return self.addNewMarker(data);
-    }
+    return self.alreadyExist(data, self.markers()) ? null : self.addNewMarker(data);
   };
 
   self.displayMarker = function() {
@@ -109,12 +60,11 @@ function ViewModel() {
     // allow default behavior (go to the #map div).
     return true;
   };
+
+  self.init = function() {
+    locationModel.init();
+  };
 }
-
-const locationViewModel = new ViewModel();
-
-// Activate knockout.js
-ko.applyBindings(locationViewModel);
 
 ko.bindingHandlers.scrollTo = {
   // Usage: data-bind="scrollTo: boolean".
@@ -136,3 +86,10 @@ ko.bindingHandlers.scrollTo = {
     }
   }
 };
+
+const locationViewModel = new ViewModel();
+
+// Activate knockout.js
+ko.applyBindings(locationViewModel);
+
+locationViewModel.init();
