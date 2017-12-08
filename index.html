@@ -19,9 +19,24 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#"><span data-bind="text: $root.filteredMarkers().length">&nbsp;</span> Running Trails Within 60 Miles</a>
+        <a class="navbar-brand" href="#"><span data-bind="text: $root.filteredTrails().length">&nbsp;</span> Running Trails Within <span data-bind="text: filteredTrailsRadius"></span> Miles</a>
       </div>
       <div class="collapse navbar-collapse" id="filter-collapse">
+        <form class="navbar-form navbar-left" role="search">
+          <button data-bind="click: findTrails" type="submit" class="btn btn-default">Find Trails Near Me</button>
+          <div class="form-group">
+            <label for="search-radius">Search Radius (Miles):</label>
+            <input data-bind="textInput: searchRadius" id="search-radius" type="text" class="form-control" placeholder="Enter miles">
+          </div>
+        </form>
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Options <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a data-bind="click: clearTrails" href="#">Clear Markers</a></li>
+            </ul>
+          </li>
+        </ul>
         <form class="navbar-form navbar-right">
           <div class="input-group">
             <input data-bind="textInput: filter" type="text" class="form-control trail-filter" placeholder="Filter trails by name" aria-describedby="filter-icon">
@@ -30,6 +45,7 @@
             </span>
           </div>
         </form>
+
       </div>
     </div>
   </nav>
@@ -40,15 +56,36 @@
         <div class="alert reduced-margin" data-bind="text: messageText, css: messageClass" role="alert"></div>
       </div>
       <div class="col-sm-3 full-height">
-        <div data-bind="foreach: filteredMarkers" class="list-group full-height no-bottom-margin scrollable">
-          <a href="#map" data-bind="text: title, click: $parent.displayMarker, scrollTo: $data === $parent.currentMarker(), css: { active: $data === $parent.currentMarker() }" class="list-group-item"></a>
+        <div data-bind="foreach: filteredTrails" class="list-group full-height no-bottom-margin scrollable">
+          <a href="#map" data-bind="text: title, click: $parent.displayMarker, scrollTo: $data === $parent.currentTrail(), css: { active: $data === $parent.currentTrail() }" class="list-group-item"></a>
         </div>
       </div>
       <div class="col-sm-9 full-height">
         <div id="map"></div>
+        <div id="info-window">
+          <div id="info-window-content">
+            <div class='trailapi'>
+              <!-- ko with: currentTrail -->
+                <h1 data-bind="text: title"></h1>
+                <p data-bind="text: description" class="description bg-primary text-justify"></p>
+                <!-- ko foreach: trails -->
+                  <div class="trail-type">Trail type: <span data-bind="text: activity_type_name"></span></div>
+                  <div class="trail-length">Trail length: <span data-bind="text: length" ></span> miles</div>
+                  <p data-bind="html: description" class="description bg-info text-justify"></p>
+                  <a data-bind="attr: { href: url }" class="btn btn-default btn-xs" target="_blank">More info</a>
+                <!-- /ko -->
+              <!-- /ko -->
+              <div><small>Copyright 2012 TrailAPI.</small></div>
+            </div>
+            <div class='wikipedia'>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+
 
   <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-database.js"></script>
@@ -71,7 +108,7 @@
   <script src="js/trail_api.js"></script>
   <script src="js/model.js"></script>
   <script src="js/app.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCsq-cspqC3kPEhlTasMA8DPDeTfCaoSSA&v=3&callback=googleMaps.init"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCsq-cspqC3kPEhlTasMA8DPDeTfCaoSSA&v=3&callback=googleMap.init"></script>
 
 </body>
 </html>

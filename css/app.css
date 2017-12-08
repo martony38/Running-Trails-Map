@@ -7,6 +7,10 @@
   height: 100vh;
 }
 
+#info-window {
+  display: none;
+}
+
 .no-bottom-margin {
   margin-bottom: 0px;
 }
@@ -36,5 +40,8 @@
   }
   .navbar-form .input-group>.form-control.trail-filter {
     width: 360px;
+  }
+  #search-radius {
+    width: 50px;
   }
 }

@@ -2,86 +2,111 @@
 // course (repository: https://github.com/udacity/ud864) or from
 // examples in the google maps API documentation.
 
-var googleMaps = {
-  map: null,
-  infoWindow: null,
-  bounds: null,
+function GoogleMap() {
+  const self = this;
+
+  self.map = null;
+  self.infoWindow = null;
+  self.bounds= null;
+
   // Callback when google maps API finish to load asynchronously
-  init() {
-    this.map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 40.440624, lng: -79.995888},
+  self.init = () => {
+    self.map = new google.maps.Map(document.getElementById('map'), {
+      center: locationViewModel.userLocation(),
       zoom: 13,
       mapTypeControl: true,
       mapTypeControlOptions: {
         mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain']
       }
     });
-    this.infoWindow = new google.maps.InfoWindow();
-    this.bounds = new google.maps.LatLngBounds();
+    self.map.addListener('center_changed', function() {
+      locationViewModel.setUserLocation();
+    });
+    self.infoWindow = new google.maps.InfoWindow();
+    self.infoWindow.setContent(document.getElementById('info-window-content'))
+    self.infoWindow.addListener('closeclick', function() {
+      self.saveInfoWindow();
+    });
+    self.bounds = new google.maps.LatLngBounds();
+    locationViewModel.initializeTrails.then(self.initializeMarkers);
+  };
 
-    // Set default location to Pittsburgh, PA, USA
-    let userLocation = {lat: 40.440624, lng: -79.995888};
-
-    // Display status message
-    locationViewModel.displayMessage(true)
-
-    // Try HTML5 geolocation.
-    if (navigator.geolocation) {
-      locationViewModel.messageClass('alert-info');
-      locationViewModel.messageText('Finding current location... Please wait.');
-      navigator.geolocation.getCurrentPosition(function success(position) {
-        userLocation.lat = position.coords.latitude;
-        userLocation.lng = position.coords.longitude;
-        locationViewModel.messageText('Location found. Finding nearby trails...');
-        googleMaps.map.setCenter(userLocation);
-        googleMaps.getNearbyTrails(userLocation);
-      }, function error() {
-        googleMaps.showGeoLocErrorMsg('The Geolocation service failed.');
-        googleMaps.getNearbyTrails(userLocation);
-      });
+  self.initializeMarkers = () => {
+    const trails = locationViewModel.trails()
+    if (trails.length > 0) {
+      // If a list of trails already exist and was successfully retrieved
+      // from the Firebase database, initialize corresponding markers on
+      // the map.
+      for (const trail of trails) {
+        self.initMarker(trail)
+      };
     } else {
-      this.showGeoLocErrorMsg('Your browser doesn\'t support geolocation.');
-      this.getNearbyTrails(userLocation);
+      // If no trails can be found, get user location and search for trails
+      // using the TrailAPI.
+      locationViewModel.getUserLocation().then( () => {
+        self.map.setCenter(locationViewModel.userLocation());
+        locationViewModel.findTrails();
+      }).catch((errorMessage) => {
+        locationViewModel.messageClass('alert-warning');
+        locationViewModel.messageText(`${errorMessage} Center the map on your location and click "Find Trails Near Me"`);
+      })
     }
-  },
-  showGeoLocErrorMsg(msg) {
-    locationViewModel.messageClass('alert-danger');
-    locationViewModel.messageText(`${msg} Finding nearby trails using default location...`);
-  },
-  getNearbyTrails(location) {
-    getTrails(location, 'hiking');
-    getTrails(location, 'mountain+biking');
-  },
-  toggleBounce(marker) {
+  };
+
+  self.saveInfoWindow = () => {
+    // Save content of infowindow on the html to keep knockout functionality
+    document.getElementById('info-window').appendChild(self.infoWindow.getContent());
+  };
+
+  self.toggleBounce = marker => {
     if (marker.getAnimation() !== null) {
       marker.setAnimation(null);
     } else {
       marker.setAnimation(google.maps.Animation.BOUNCE);
     }
-  },
-  displayOnMap(marker) {
-    googleMaps.infoWindow.close();
-    this.toggleBounce(marker);
-    populateInfoWindow(marker);
+  };
+
+  self.showInfoWindow = marker => {
+    self.saveInfoWindow();
+    self.infoWindow.close();
+    self.toggleBounce(marker);
     setTimeout(function() {
-      googleMaps.toggleBounce(marker);
-      googleMaps.infoWindow.open(googleMaps.map, marker);
+      self.toggleBounce(marker);
+      self.infoWindow.open(self.map, marker);
     }, 2000);
-  },
-  // Add click events to markers and adjust the map boundaries to display
-  // them all.
-  initializeMarkers(locations) {
-    locations.forEach(function(data) {
-      const marker = locationViewModel.addMarker(data);
-      if (marker !== null) {
-      // Extend the boundaries of the map for each marker.
-        googleMaps.bounds.extend(marker.position);
-        marker.addListener('click', function() {
-          locationViewModel.currentMarker(this);
-          googleMaps.displayOnMap(this);
-        });
-      }
+  };
+
+  self.populateInfoWindow = info => {
+  };
+
+  self.initMarker = trail => {
+    // Add a new marker to a trail object.
+    trail['marker'] = new google.maps.Marker({
+      position: trail.location,
+      title: trail.title,
+      map: self.map,
+      animation: google.maps.Animation.DROP
     });
-    this.map.fitBounds(this.bounds);
-  }
+
+    // Add listener to click event on marker.
+    trail.marker.addListener('click', function() {
+      locationViewModel.setCurrentTrail(trail);
+    });
+
+    // Extend the boundaries of the map to include marker.
+    self.bounds.extend(trail.marker.position);
+    self.map.fitBounds(self.bounds);
+  };
+
+  self.computeDistance = (from, to) => {
+    const fromCoords = new google.maps.LatLng(from);
+    const toCoords = new google.maps.LatLng(to);
+    return google.maps.geometry.spherical.computeDistanceBetween(fromCoords, toCoords)
+  };
+
+
 };
+
+// Browser will throw an error if "const" or "let" are used for the googleMap
+// variable assignement.
+var googleMap = new GoogleMap();
