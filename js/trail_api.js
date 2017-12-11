@@ -36,9 +36,12 @@ function TrailAPI() {
         }
       }
 
-      locationViewModel.displayMessage(false);
+      locationViewModel.messages.pop();
     }).fail(function () {
-      // TODO: Display error message
+      locationViewModel.addMessage({
+        messageText: 'Error while connecting to trailapi, please check your internet connection and try again.',
+        messageClass: 'alert-danger'
+      });
     });
   };
 

@@ -47,8 +47,11 @@ function GoogleMap() {
         self.map.setCenter(locationViewModel.userLocation());
         locationViewModel.findTrails();
       }).catch((errorMessage) => {
-        locationViewModel.messageClass('alert-warning');
-        locationViewModel.messageText(`${errorMessage} Center the map on your location and click "Find Trails Near Me"`);
+        locationViewModel.addMessage({
+          messageText: `${errorMessage} Center the map on your location and click "Find Trails Near Me"`,
+          messageClass: 'alert-warning'
+        });
+        console.log(`${errorMessage} Center the map on your location and click "Find Trails Near Me"`)
       })
     }
   };

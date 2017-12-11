@@ -1,17 +1,18 @@
 function ViewModel() {
   const self = this;
+
   self.trails = ko.observableArray([]);
-  self.filter = ko.observable(null);
-  // TODO: make an observable array of messages
-  self.messageText = ko.observable(null);
-  self.messageClass = ko.observable(null);
-  self.displayMessage = ko.observable(false);
   self.currentTrail = ko.observable(null);
+  self.filter = ko.observable(null);
+
+  self.messages = ko.observableArray([]);
+  self.displayMessages = ko.observable(false);
+
   // Set default location to Pittsburgh, PA, USA
   self.userLocation = ko.observable({lat: 40.440624, lng: -79.995888});
   self.searchRadius = ko.observable(60);
 
-  // Filter markers.
+  // Filter trails/markers.
   self.filteredTrails = ko.computed(function () {
     let searchResults = [];
     if (self.filter() === null) {
@@ -27,7 +28,7 @@ function ViewModel() {
         }
       });
     }
-    // Sort markers alphabetically by title.
+    // Sort trails/markers alphabetically by title.
     return searchResults.sort(function (left, right) {
       return left.title == right.title ? 0 : (left.title < right.title ? -1 : 1);
     });
@@ -56,22 +57,22 @@ function ViewModel() {
           if (!('trails' in data)) {
             data['trails'] = null;
           }
-          self.trails().push(data);
+          self.trails.push(data);
         });
       } else {
-        // Display error message if Firebase promise rejected.
-        self.messageClass('alert-danger');
-        self.messageText('Error: Cannot retrieve trails from database');
-        self.displayMessage(true);
-        console.log('Error: Cannot retrieve trails from database')
+        // Display error message if database empty.
+        self.addMessage({
+          messageText: 'Could not find any trails in the database',
+          messageClass: 'alert-warning'
+        });
       }
       return self.trails();
-    });
-
-    self.initializeTrails.then(function(){
-      // Force ko.computed "filteredTrails" to reevaluate after the
-      // observable array "trails" has finished initializing.
-      self.trails.valueHasMutated();
+    }).catch(function(error) {
+      // Display error message if Firebase promise rejected.
+      self.addMessage({
+        messageText: 'Error: Failed to retrieve trails from database',
+        messageClass: 'alert-danger'
+      });
     });
   };
 
@@ -85,33 +86,28 @@ function ViewModel() {
     trailAPI.getTrailInfo(trail.location);
     self.currentTrail(trail);
     googleMap.showInfoWindow(trail.marker);
-    console.log(self.currentTrail());
   }
 
   self.addInfoToCurrentTrail = trails => {
-    console.log('updating current trail');
     let currentTrail = self.currentTrail();
     currentTrail['trails'] = trails;
     self.currentTrail(currentTrail);
-    console.log(self.currentTrail());
   }
 
   self.findTrails = function () {
-    self.messageClass('alert-info');
-    self.messageText('Finding nearby trails... Please wait.');
-    self.displayMessage(true)
+    self.addMessage({
+      messageText: 'Finding nearby trails... Please wait.',
+      messageClass: 'alert-info'
+    });
     trailAPI.findTrails(self.userLocation(), self.searchRadius());
   };
 
   self.addTrail = function(data) {
     if (!self.alreadyExist(data, self.trails())) {
       let trail = data;
-      self.trails().push(trail);
+      self.trails.push(trail);
       locationModel.saveTrail(trail);
       googleMap.initMarker(trail);
-      // Force computed observable "filteredTrails" to reevaluate after the
-      // observable array "trails" has been modified.
-      self.trails.valueHasMutated();
     }
   };
 
@@ -127,23 +123,27 @@ function ViewModel() {
     // Try HTML5 geolocation to get user location.
     return new Promise((resolve, reject) => {
       // Display status message
-      self.displayMessage(true)
 
       if (!navigator.geolocation){
-        reject('Your browser doesn\'t support geolocation.')
+        reject('Your browser doesn\'t support geolocation.');
       }
 
-      self.messageClass('alert-info');
-      self.messageText('Finding current location... Please wait.');
+      self.addMessage({
+        messageText: 'Finding current location... Please wait.',
+        messageClass: 'alert-info'
+      });
 
       function success(position) {
         self.userLocation({lat: position.coords.latitude, lng: position.coords.longitude});
-        self.messageText('Location found.');
-        resolve()
+        self.addMessage({
+          messageText: 'Location found.',
+          messageClass: 'alert-info'
+        });
+        resolve();
       }
 
       function error() {
-        reject('The Geolocation service failed.')
+        reject('The Geolocation service failed.');
       }
 
       return navigator.geolocation.getCurrentPosition(success, error);
@@ -157,13 +157,40 @@ function ViewModel() {
 
   self.clearTrails = () => {
     while (self.trails().length) {
-      let marker = self.trails().pop().marker;
+      let marker = self.trails.pop().marker;
       marker.setMap(null);
       marker = null;
     }
     googleMap.bounds = new google.maps.LatLngBounds();
-    self.trails.valueHasMutated();
   }
+
+  self.addMessage = (message) => {
+
+    self.messages().forEach(function(message) {
+      // remove previous info messages
+      if (message.messageClass == 'alert-info') {
+        self.removeMessage(message);
+      }
+    });
+
+    self.messages.push(message);
+    if (!self.displayMessages()) {
+      self.displayMessages(true)
+    }
+
+    message['timeoutDone'] = new Promise((resolve) => {
+      setTimeout(function() {
+        resolve();
+      }, 2000);
+    });
+
+  }
+
+  self.removeMessage = (message) => {
+    message.timeoutDone.then(() => {self.messages.remove(message)});
+  }
+
+
 }
 
 ko.bindingHandlers.scrollTo = {
