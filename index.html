@@ -69,8 +69,8 @@
         <div id="map"></div>
         <div id="info-window">
           <div id="info-window-content">
-            <div class='trailapi'>
-              <!-- ko with: currentTrail -->
+            <!-- ko with: currentTrail -->
+              <div class='trailapi'>
                 <h1 data-bind="text: title"></h1>
                 <p data-bind="text: description" class="description bg-primary text-justify"></p>
                 <!-- ko foreach: trails -->
@@ -79,11 +79,18 @@
                   <p data-bind="html: description" class="description bg-info text-justify"></p>
                   <a data-bind="attr: { href: url }" class="btn btn-default btn-xs" target="_blank">More info</a>
                 <!-- /ko -->
-              <!-- /ko -->
-              <div><small>Copyright 2012 TrailAPI.</small></div>
-            </div>
-            <div class='wikipedia'>
-            </div>
+                <div><small>Copyright 2012 TrailAPI.</small></div>
+              </div>
+              <div class='wikipedia'> Related Wikipedia Articles:
+                <!-- ko foreach: articles -->
+                  <div class="trail-type" data-bind="text: title"></div>
+                  <p data-bind="text: description" class="description bg-info text-justify"></p>
+                  <a data-bind="attr: { href: url }" class="btn btn-default btn-xs" target="_blank">More info</a>
+                <!-- /ko -->
+                <div><small>Copyright 2017 Wikipedia.</small></div>
+              </div>
+              <div><a data-bind="click: $parent.deleteTrail" class="btn btn-default btn-xs" target="_blank">Delete</a></div>
+            <!-- /ko -->
           </div>
         </div>
       </div>
@@ -111,6 +118,7 @@
   <script src="node_modules/knockout/build/output/knockout-latest.js"></script>
   <script src="js/map.js"></script>
   <script src="js/trail_api.js"></script>
+  <script src="js/wikipedia_api.js"></script>
   <script src="js/model.js"></script>
   <script src="js/app.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCsq-cspqC3kPEhlTasMA8DPDeTfCaoSSA&v=3&callback=googleMap.init"></script>
