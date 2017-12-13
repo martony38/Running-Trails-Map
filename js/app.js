@@ -96,15 +96,14 @@ function ViewModel() {
     trailAPI.getTrailInfo();
     wikipediaAPI.getArticles();
     googleMap.showInfoWindow(trail.marker);
-  }
+  };
 
   self.addInfoToCurrentTrail = (key, infoArray) => {
     let currentTrail = self.currentTrail();
     currentTrail[key] = infoArray;
-
-    // TODO: Check if line below is necessary.
-    self.currentTrail(currentTrail);
-  }
+    // Notify knockout that currentTrail object has been updated.
+    self.currentTrail.valueHasMutated();
+  };
 
   self.findTrails = function () {
     self.addMessage({
