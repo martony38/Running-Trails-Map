@@ -28,7 +28,9 @@ function GoogleMap() {
       self.saveInfoWindow();
     });
     self.bounds = new google.maps.LatLngBounds();
-    locationViewModel.initializeTrails.then(self.initializeMarkers);
+    if (typeof locationViewModel.initializeTrails != 'undefined') {
+      locationViewModel.initializeTrails.then(self.initializeMarkers);
+    }
   };
 
   self.initializeMarkers = () => {

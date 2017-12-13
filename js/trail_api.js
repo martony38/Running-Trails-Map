@@ -38,16 +38,13 @@ function TrailAPI() {
 
       locationViewModel.messages.pop();
     }).fail(function () {
-      locationViewModel.addMessage({
-        messageText: 'Error while connecting to trailapi, please check your internet connection and try again.',
-        messageClass: 'alert-danger'
-      });
+      self.errorMessage();
     });
   };
 
-  self.getTrailInfo = (location) => {
+  self.getTrailInfo = () => {
     // ajax call to trailapi to get content
-    $.ajax(self.ajaxOptions(location, 0.1)).done(function(response) {
+    $.ajax(self.ajaxOptions(locationViewModel.currentTrail().location, 0.1)).done(function(response) {
       let trails = []
       for (const place of response.places) {
         for (const activity of place.activities) {
@@ -56,19 +53,19 @@ function TrailAPI() {
           }
         }
       }
-      locationViewModel.addInfoToCurrentTrail(trails)
+      locationViewModel.addInfoToCurrentTrail('trails', trails)
     }).fail(function() {
-      locationViewModel.addInfoToCurrentTrail(null)
+      self.errorMessage();
+      //locationViewModel.addInfoToCurrentTrail(null)
     });
   };
+
+  self.errorMessage = () => {
+    locationViewModel.addMessage({
+      messageText: 'Error while connecting to trailapi, please check your internet connection or firewall and try again.',
+      messageClass: 'alert-danger'
+    });
+  }
 }
 
 const trailAPI = new TrailAPI()
-
-/*
-  replaceAll(string, search, replacement) {
-    // function to fix at least one place description from trailapi. Taken from:
-    // https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string-in-javascript?page=1&tab=votes#tab-top
-    return string.split(search).join(replacement);
-  },
-*/

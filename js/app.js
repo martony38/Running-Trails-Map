@@ -48,32 +48,41 @@ function ViewModel() {
   self.init = function() {
     locationModel.init();
 
-    // Initialize observable array "trails" when Firebase promise containing
-    // data is resolved.
-    self.initializeTrails = locationModel.getTrails.then(function(trails) {
-      if (trails !== null) {
-        trails.forEach(function(trail) {
-          let data = trail.val();
-          if (!('trails' in data)) {
-            data['trails'] = null;
-          }
-          self.trails.push(data);
-        });
-      } else {
-        // Display error message if database empty.
+    if (typeof locationModel.getTrails != 'undefined') {
+      // Initialize observable array "trails" when Firebase promise containing
+      // data is resolved.
+      self.initializeTrails = locationModel.getTrails.then(function(trails) {
+        if (trails !== null) {
+          trails.forEach(function(trail) {
+            let data = trail.val();
+
+            // Add reference to Firebase key for later deletion from database.
+            data['key'] = trail.key;
+
+            if (!('trails' in data)) {
+              data['trails'] = null;
+            }
+            if (!('articles' in data)) {
+              data['articles'] = null;
+            }
+            self.trails.push(data);
+          });
+        } else {
+          // Display error message if database empty.
+          self.addMessage({
+            messageText: 'Could not find any trails in the database',
+            messageClass: 'alert-warning'
+          });
+        }
+        return self.trails();
+      }).catch(function(error) {
+        // Display error message if Firebase promise rejected.
         self.addMessage({
-          messageText: 'Could not find any trails in the database',
-          messageClass: 'alert-warning'
+          messageText: 'Error: Failed to retrieve trails from database',
+          messageClass: 'alert-danger'
         });
-      }
-      return self.trails();
-    }).catch(function(error) {
-      // Display error message if Firebase promise rejected.
-      self.addMessage({
-        messageText: 'Error: Failed to retrieve trails from database',
-        messageClass: 'alert-danger'
       });
-    });
+    }
   };
 
   self.displayMarker = function() {
@@ -83,14 +92,17 @@ function ViewModel() {
   };
 
   self.setCurrentTrail = trail => {
-    trailAPI.getTrailInfo(trail.location);
     self.currentTrail(trail);
+    trailAPI.getTrailInfo();
+    wikipediaAPI.getArticles();
     googleMap.showInfoWindow(trail.marker);
   }
 
-  self.addInfoToCurrentTrail = trails => {
+  self.addInfoToCurrentTrail = (key, infoArray) => {
     let currentTrail = self.currentTrail();
-    currentTrail['trails'] = trails;
+    currentTrail[key] = infoArray;
+
+    // TODO: Check if line below is necessary.
     self.currentTrail(currentTrail);
   }
 
@@ -105,8 +117,8 @@ function ViewModel() {
   self.addTrail = function(data) {
     if (!self.alreadyExist(data, self.trails())) {
       let trail = data;
+      trail['key'] = locationModel.saveTrail(trail);
       self.trails.push(trail);
-      locationModel.saveTrail(trail);
       googleMap.initMarker(trail);
     }
   };
@@ -162,7 +174,21 @@ function ViewModel() {
       marker = null;
     }
     googleMap.bounds = new google.maps.LatLngBounds();
-  }
+  };
+
+  self.deleteTrail = function() {
+    googleMap.saveInfoWindow();
+    googleMap.infoWindow.close();
+
+    // Remove marker from map
+    let marker = this.marker;
+    marker.setMap(null);
+    marker = null;
+
+    // Remove trail from trail list and database
+    self.trails.remove(this);
+    locationModel.deleteTrail(this.key)
+  };
 
   self.addMessage = (message) => {
 
@@ -175,7 +201,7 @@ function ViewModel() {
 
     self.messages.push(message);
     if (!self.displayMessages()) {
-      self.displayMessages(true)
+      self.displayMessages(true);
     }
 
     message['timeoutDone'] = new Promise((resolve) => {
