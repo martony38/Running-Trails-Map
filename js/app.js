@@ -90,8 +90,8 @@ function SpotViewModel() {
     }
   };
 
-  self.displayMarker = function() {
-    self.setCurrentSpot(this);
+  self.displayMarker = spot => {
+    self.setCurrentSpot(spot);
     // Allow default behavior of "a" links (go to the #map div). Useful for
     // small devices as the map will appear below the list of trails.
     return true;
@@ -193,15 +193,27 @@ function SpotViewModel() {
     googleMap.map.setCenter(self.userLocation());
   };
 
-  self.deleteSpot = function() {
+  self.deleteSpot = spot => {
+    self.deleteSpotData(spot)
+    // Remove spot from observable.
+    self.spots.remove(spot);
+  };
+
+  self.deleteSpotData = spot => {
     // Remove marker from map.
-    googleMap.deleteMarker(this.marker);
+    googleMap.deleteMarker(spot.marker);
+    // Remove spot from database.
+    spotModel.deleteSpot(spot.firebaseKey)
+  };
 
-    // Remove trail from observable.
-    self.spots.remove(this);
+  self.removeDistantSpots = () => {
+    self.spots.remove(spot => {
+      const distance = googleMap.computeDistance(self.userLocation(), spot.location);
+      const tooFar = (distance * 0.000621371) > self.searchRadius()
+      if (tooFar) { self.deleteSpotData(spot) }
+      return tooFar;
+    })
 
-    // Remove trail from database.
-    spotModel.deleteSpot(this.key)
   };
 
   self.addMessage = message => {
