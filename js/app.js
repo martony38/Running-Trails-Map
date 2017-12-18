@@ -171,7 +171,12 @@ function SpotViewModel() {
 
   self.findUserLocation = () => {
     self.getUserLocation().then(() => {
-      self.map.setCenter(spotViewModel.userLocation());
+      // Recenter the map on the user location and reposition marker.
+      googleMap.userLocationMarker.setMap(null);
+      googleMap.resetZoom([]);
+      googleMap.userLocationMarker.setPosition(self.userLocation())
+      googleMap.userLocationMarker.setAnimation(google.maps.Animation.DROP)
+      googleMap.userLocationMarker.setMap(googleMap.map);
     }).catch((errorMessage) => {
       spotViewModel.addMessage({
         messageText: `${errorMessage} Drag the running man icon to your location, then click "Find Trails Near Me"`,
