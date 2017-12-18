@@ -1,33 +1,41 @@
-function Model() {
+function SpotModel() {
   const self = this;
 
   self.init = () => {
     if (typeof firebase != 'undefined') {
-      self.getTrails = firebase.database().ref('locations/').once('value').then(snapshot => {
-        return snapshot.child('trails').exists() ? snapshot.child('trails') : (snapshot.child('default').exists() ? snapshot.child('default') : null);
+      self.getSpots = firebase.database().ref().once('value').then(snapshot => {
+        const userLocation = snapshot.child('user').exists() ? snapshot.child('user') : null;
+        const spots = snapshot.child('spots').exists() ? snapshot.child('spots') : (snapshot.child('default').exists() ? snapshot.child('default') : null);
+        return {userLocation: userLocation, spots: spots}
       });
     } else {
-      locationViewModel.addMessage({
+      spotViewModel.addMessage({
         messageText: 'Error: Could not connect to the database service. Your progress will not be saved!!! Check your internet connection or firewall.',
         messageClass: 'alert-danger'
       });
     }
   };
 
-  self.saveTrail = data => {
+  self.saveSpot = data => {
     if (typeof firebase != 'undefined') {
-      const newRef = firebase.database().ref('locations/trails').push(data);
+      const newRef = firebase.database().ref('spots').push(data);
       return newRef.key;
     }
   };
 
 
-  self.deleteTrail = key => {
+  self.deleteSpot = key => {
     if (typeof firebase != 'undefined') {
-      firebase.database().ref('locations/trails/' + key).remove()
+      firebase.database().ref('spots/' + key).remove()
     }
   };
 
+  self.saveUserLocation = data => {
+    if (typeof firebase != 'undefined') {
+      const editRef = firebase.database().ref('user');
+      editRef.set(data);
+    }
+  };
 }
 
-const locationModel = new Model();
+const spotModel = new SpotModel();

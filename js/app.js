@@ -1,81 +1,86 @@
-function ViewModel() {
+let Spot = function(data) {
+  this.deleteEnabled = ko.observable(false);
+  this.trails = ko.observable('trails' in data ? data.trails : null);
+  this.articles = ko.observable('articles' in data ? data.articles : null);
+  this.location = data.location;
+  this.title = data.title;
+  this.description = data.description;
+  this.firebaseKey = data.firebaseKey;
+};
+
+function SpotViewModel() {
   const self = this;
 
-  self.trails = ko.observableArray([]);
-  self.currentTrail = ko.observable(null);
+  self.spots = ko.observableArray([]);
+  self.currentSpot = ko.observable(null);
   self.filter = ko.observable(null);
 
   self.messages = ko.observableArray([]);
   self.displayMessages = ko.observable(false);
 
   // Set default location to Pittsburgh, PA, USA
-  self.userLocation = ko.observable({lat: 40.440624, lng: -79.995888});
+  self.userLocation = ko.observable({ lat: 40.440624, lng: -79.995888 });
   self.searchRadius = ko.observable(60);
 
   // Filter trails/markers.
-  self.filteredTrails = ko.computed(function () {
+  self.filteredSpots = ko.computed(() => {
     let searchResults = [];
+
     if (self.filter() === null) {
-      searchResults = self.trails();
+      searchResults = self.spots();
     } else {
-      self.trails().forEach(function(trail) {
-        const marker = trail.marker
-        if (trail.title.toLowerCase().search(self.filter().toLowerCase()) !== -1) {
-          searchResults.push(trail);
-          if (marker !== undefined) {marker.setMap(googleMap.map)}
+      self.spots().forEach(spot => {
+        const marker = spot.marker;
+        if (spot.title.toLowerCase().search(self.filter().toLowerCase()) !== -1) {
+          searchResults.push(spot);
+          if (marker !== undefined) { marker.setMap(googleMap.map) }
         } else {
-          if (marker !== undefined) {marker.setMap(null)}
+          if (marker !== undefined) { googleMap.hideMarker(marker) }
         }
       });
     }
+
     // Sort trails/markers alphabetically by title.
-    return searchResults.sort(function (left, right) {
+    return searchResults.sort((left, right) => {
       return left.title == right.title ? 0 : (left.title < right.title ? -1 : 1);
     });
   });
 
-  self.filteredTrailsRadius = ko.computed(function() {
+  self.filteredSpotsRadius = ko.computed(() => {
     let result = 0;
-    self.filteredTrails().forEach(function(trail) {
-      const distance = googleMap.computeDistance(self.userLocation(), trail.location)
-      if (distance > result) {
-        result = distance;
-      }
+    self.filteredSpots().forEach(spot => {
+      const distance = googleMap.computeDistance(self.userLocation(), spot.location);
+      if (distance > result) { result = distance }
     });
     return Math.round(result * 0.000621371);
   });
 
-  self.init = function() {
-    locationModel.init();
+  self.init = () => {
+    spotModel.init();
 
-    if (typeof locationModel.getTrails != 'undefined') {
+    if (typeof spotModel.getSpots != 'undefined') {
       // Initialize observable array "trails" when Firebase promise containing
       // data is resolved.
-      self.initializeTrails = locationModel.getTrails.then(function(trails) {
-        if (trails !== null) {
-          trails.forEach(function(trail) {
-            let data = trail.val();
+      self.initializeSpots = spotModel.getSpots.then(data => {
+        if (data.userLocation !== null) { self.userLocation(data.userLocation.val()) }
+        if (data.spots !== null) {
+          data.spots.forEach(spot => {
+            let spotData = spot.val();
 
             // Add reference to Firebase key for later deletion from database.
-            data['key'] = trail.key;
+            spotData['firebaseKey'] = spot.key;
 
-            if (!('trails' in data)) {
-              data['trails'] = null;
-            }
-            if (!('articles' in data)) {
-              data['articles'] = null;
-            }
-            self.trails.push(data);
+            self.spots.push(new Spot(spotData));
           });
         } else {
           // Display error message if database empty.
           self.addMessage({
-            messageText: 'Could not find any trails in the database',
+            messageText: `Could not find any saved trails, click "Find Trails Near Me" to start adding trails to the map.`,
             messageClass: 'alert-warning'
           });
         }
-        return self.trails();
-      }).catch(function(error) {
+        return self.spots();
+      }).catch(error => {
         // Display error message if Firebase promise rejected.
         self.addMessage({
           messageText: 'Error: Failed to retrieve trails from database',
@@ -86,26 +91,31 @@ function ViewModel() {
   };
 
   self.displayMarker = function() {
-    self.setCurrentTrail(this);
-    // allow default behavior of "a" links (go to the #map div).
+    self.setCurrentSpot(this);
+    // Allow default behavior of "a" links (go to the #map div). Useful for
+    // small devices as the map will appear below the list of trails.
     return true;
   };
 
-  self.setCurrentTrail = trail => {
-    self.currentTrail(trail);
+  self.setCurrentSpot = spot => {
+    self.currentSpot(spot);
     trailAPI.getTrailInfo();
     wikipediaAPI.getArticles();
-    googleMap.showInfoWindow(trail.marker);
+    googleMap.showInfoWindow(spot.marker);
   };
 
-  self.addInfoToCurrentTrail = (key, infoArray) => {
-    let currentTrail = self.currentTrail();
-    currentTrail[key] = infoArray;
-    // Notify knockout that currentTrail object has been updated.
-    self.currentTrail.valueHasMutated();
+  self.addInfoToCurrentSpot = (key, infoArray) => {
+    let currentSpot = self.currentSpot();
+    currentSpot[key] = infoArray;
+    // Notify knockout that currentSpot object has been updated.
+    self.currentSpot.valueHasMutated();
   };
 
-  self.findTrails = function () {
+  self.findSpots = () => {
+    // Save user location in database.
+    spotModel.saveUserLocation(self.userLocation())
+
+    // Look for trails nearby user.
     self.addMessage({
       messageText: 'Finding nearby trails... Please wait.',
       messageClass: 'alert-info'
@@ -113,20 +123,18 @@ function ViewModel() {
     trailAPI.findTrails(self.userLocation(), self.searchRadius());
   };
 
-  self.addTrail = function(data) {
-    if (!self.alreadyExist(data, self.trails())) {
-      let trail = data;
-      trail['key'] = locationModel.saveTrail(trail);
-      self.trails.push(trail);
-      googleMap.initMarker(trail);
-    }
+  self.addSpot = data => {
+    let spot = data;
+    spot['firebaseKey'] = spotModel.saveSpot(spot);
+    self.spots.push(spot);
+    googleMap.initMarker(spot);
   };
 
-  self.alreadyExist = function(data, trailList) {
+  self.alreadyExist = data => {
     // Check if there is already a marker at this location.
-    return trailList.some(function(trail) {
+    return self.spots().some(spot => {
       // Loop until it evaluates to true
-      return googleMap.computeDistance(data.location, trail.location) < 1.0;
+      return googleMap.computeDistance(data.location, spot.location) < 1.0;
     });
   };
 
@@ -161,61 +169,61 @@ function ViewModel() {
     });
   };
 
-  self.setUserLocation = () => {
-    const center = googleMap.map.getCenter()
-    self.userLocation({lat: center.lat(), lng: center.lng()})
+  self.findUserLocation = () => {
+    self.getUserLocation().then(() => {
+      self.map.setCenter(spotViewModel.userLocation());
+    }).catch((errorMessage) => {
+      spotViewModel.addMessage({
+        messageText: `${errorMessage} Drag the running man icon to your location, then click "Find Trails Near Me"`,
+        messageClass: 'alert-warning'
+      });
+    })
   };
 
-  self.clearTrails = () => {
-    while (self.trails().length) {
-      let marker = self.trails.pop().marker;
-      marker.setMap(null);
-      marker = null;
+  self.clearSpots = () => {
+    while (self.spots().length) {
+      // Remove last trail from observable before removing its marker from map.
+      googleMap.deleteMarker(self.spots.pop().marker);
     }
-    googleMap.bounds = new google.maps.LatLngBounds();
+    googleMap.map.setCenter(self.userLocation());
   };
 
-  self.deleteTrail = function() {
-    googleMap.saveInfoWindow();
-    googleMap.infoWindow.close();
+  self.deleteSpot = function() {
+    // Remove marker from map.
+    googleMap.deleteMarker(this.marker);
 
-    // Remove marker from map
-    let marker = this.marker;
-    marker.setMap(null);
-    marker = null;
+    // Remove trail from observable.
+    self.spots.remove(this);
 
-    // Remove trail from trail list and database
-    self.trails.remove(this);
-    locationModel.deleteTrail(this.key)
+    // Remove trail from database.
+    spotModel.deleteSpot(this.key)
   };
 
-  self.addMessage = (message) => {
-
-    self.messages().forEach(function(message) {
-      // remove previous info messages
-      if (message.messageClass == 'alert-info') {
-        self.removeMessage(message);
-      }
+  self.addMessage = message => {
+    self.messages().forEach(message => {
+      // Remove previous info messages.
+      if (message.messageClass == 'alert-info') { self.removeMessage(message) }
     });
 
     self.messages.push(message);
-    if (!self.displayMessages()) {
-      self.displayMessages(true);
-    }
+    if (!self.displayMessages()) { self.displayMessages(true) }
 
-    message['timeoutDone'] = new Promise((resolve) => {
-      setTimeout(function() {
-        resolve();
-      }, 2000);
+    message['timeoutDone'] = new Promise(resolve => {
+      setTimeout(() => { resolve() }, 2000);
     });
+  };
 
-  }
+  self.removeMessage = message => {
+    message.timeoutDone.then(() => { self.messages.remove(message) });
+  };
 
-  self.removeMessage = (message) => {
-    message.timeoutDone.then(() => {self.messages.remove(message)});
-  }
+  self.enableDelete = function() {
+    this.deleteEnabled = true;
+  };
 
-
+  self.disableDelete = function() {
+    this.deleteEnabled = false;
+  };
 }
 
 ko.bindingHandlers.scrollTo = {
@@ -239,9 +247,9 @@ ko.bindingHandlers.scrollTo = {
   }
 };
 
-const locationViewModel = new ViewModel();
+const spotViewModel = new SpotViewModel();
 
 // Activate knockout.js
-ko.applyBindings(locationViewModel);
+ko.applyBindings(spotViewModel);
 
-locationViewModel.init();
+spotViewModel.init();

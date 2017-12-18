@@ -19,11 +19,11 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#"><span data-bind="text: $root.filteredTrails().length"></span> Running <span data-bind="text: pluralize('Trail', $root.filteredTrails().length)"></span> Within <span data-bind="text: filteredTrailsRadius"></span> <span data-bind="text: pluralize('Mile', filteredTrailsRadius)"></span></a>
+        <a class="navbar-brand" href="#"><span data-bind="text: $root.filteredSpots().length"></span> Running <span data-bind="text: pluralize('Trail', $root.filteredSpots().length)"></span> Within <span data-bind="text: filteredSpotsRadius"></span> <span data-bind="text: pluralize('Mile', filteredSpotsRadius)"></span></a>
       </div>
       <div class="collapse navbar-collapse" id="filter-collapse">
         <form class="navbar-form navbar-left" role="search">
-          <button data-bind="click: findTrails" type="submit" class="btn btn-default">Find Trails Near Me</button>
+          <button data-bind="click: findSpots" type="submit" class="btn btn-default">Find Trails Near Me</button>
           <div class="form-group">
             <label for="search-radius">Search Radius (Miles):</label>
             <input data-bind="textInput: searchRadius" id="search-radius" type="text" class="form-control" placeholder="Enter miles">
@@ -33,7 +33,8 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Options <span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li><a data-bind="click: clearTrails" href="#">Clear Markers</a></li>
+              <li><a data-bind="click: clearSpots" href="#">Clear Markers</a></li>
+              <li><a data-bind="click: findUserLocation" href="#">Find Me</a></li>
             </ul>
           </li>
         </ul>
@@ -61,18 +62,18 @@
         <!-- /ko -->
       </div>
       <div class="col-sm-3 full-height">
-        <div data-bind="foreach: filteredTrails" class="list-group full-height no-bottom-margin scrollable">
-          <a href="#map" data-bind="text: title, click: $parent.displayMarker, scrollTo: $data === $parent.currentTrail(), css: { active: $data === $parent.currentTrail() }" class="list-group-item"></a>
+        <div data-bind="foreach: filteredSpots" class="list-group full-height no-bottom-margin scrollable">
+          <a href="#map" data-bind="event: { mouseover: $parent.enableDelete, mouseout: $parent.disableDelete }, click: $parent.displayMarker, scrollTo: $data === $parent.currentSpot(), css: { active: $data === $parent.currentSpot() }" class="list-group-item"><span data-bind="text: title"></span><span class="badge" data-bind="visible: $data.deleteEnabled === true">delete</span></a>
         </div>
       </div>
       <div class="col-sm-9 full-height">
         <div id="map"></div>
         <div id="info-window">
           <div id="info-window-content">
-            <!-- ko with: currentTrail -->
+            <!-- ko with: currentSpot -->
               <div class='trailapi'>
                 <h1 data-bind="text: title"></h1>
-                <p data-bind="text: description" class="description bg-primary text-justify"></p>
+                <p data-bind="html: description" class="description bg-primary text-justify"></p>
                 <!-- ko foreach: trails -->
                   <div class="trail-type">Trail type: <span data-bind="text: activity_type_name"></span></div>
                   <div class="trail-length">Trail length: <span data-bind="text: length" ></span> miles</div>
@@ -89,7 +90,7 @@
                 <!-- /ko -->
                 <div><small>Copyright 2017 Wikipedia.</small></div>
               </div>
-              <div><a data-bind="click: $parent.deleteTrail" class="btn btn-default btn-xs" target="_blank">Delete</a></div>
+              <div><a data-bind="click: $parent.deleteSpot" class="btn btn-default btn-xs" target="_blank">Delete</a></div>
             <!-- /ko -->
           </div>
         </div>

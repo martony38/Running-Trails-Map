@@ -15,14 +15,18 @@ function TrailAPI() {
 
   self.findTrails = (location, searchRadius) => {
     // Ajax call to trailapi to get all trails within searchRadius (in miles) of location.
-    $.ajax(self.ajaxOptions(location, searchRadius)).done(function (response) {
+    $.ajax(self.ajaxOptions(location, searchRadius)).done((response) => {
 
       function isTrailRunning(activity) {
-        return activity.activity_type_name == 'hiking' || activity.activity_type_name == 'mountain biking'
+        return activity.activity_type_name == 'hiking' || activity.activity_type_name == 'mountain biking';
       }
 
+      // Initialize counters.
+      let trailFoundCounter = 0;
+      let trailAddedCounter = 0;
+
       for (const place of response.places) {
-        if (place.activities.length > 0 && place.activities.some( activity => isTrailRunning)) {
+        if (place.activities.length > 0 && place.activities.some(isTrailRunning)) {
           const data = {
             title: place.name,
             description: place.description || 'no description available',
@@ -31,20 +35,29 @@ function TrailAPI() {
               lng: place.lon
             },
             trails: null,
+            articles: null
           };
-          locationViewModel.addTrail(data);
+
+          // Update counters.
+          trailFoundCounter++;
+          if (!spotViewModel.alreadyExist(data)) {
+            spotViewModel.addSpot(data);
+            trailAddedCounter++;
+          }
         }
       }
 
-      locationViewModel.messages.pop();
-    }).fail(function () {
-      self.errorMessage();
-    });
+      spotViewModel.addMessage({
+        messageText: `${trailFoundCounter} ${pluralize('trail', trailFoundCounter)} found.
+          ${trailAddedCounter} ${pluralize('trail', trailAddedCounter)} ${pluralize('was', trailAddedCounter)} added to the map.`,
+        messageClass: 'alert-info'
+      });
+    }).fail(self.errorMessage);
   };
 
   self.getTrailInfo = () => {
-    // ajax call to trailapi to get content
-    $.ajax(self.ajaxOptions(locationViewModel.currentTrail().location, 0.1)).done(function(response) {
+    // ajax call to trailapi to get info about one specific location.
+    $.ajax(self.ajaxOptions(spotViewModel.currentSpot().location, 0.1)).done((response) => {
       let trails = []
       for (const place of response.places) {
         for (const activity of place.activities) {
@@ -53,15 +66,12 @@ function TrailAPI() {
           }
         }
       }
-      locationViewModel.addInfoToCurrentTrail('trails', trails)
-    }).fail(function() {
-      self.errorMessage();
-      //locationViewModel.addInfoToCurrentTrail(null)
-    });
+      spotViewModel.addInfoToCurrentSpot('trails', trails)
+    }).fail(self.errorMessage);
   };
 
   self.errorMessage = () => {
-    locationViewModel.addMessage({
+    spotViewModel.addMessage({
       messageText: 'Error while connecting to trailapi, please check your internet connection or firewall and try again.',
       messageClass: 'alert-danger'
     });
