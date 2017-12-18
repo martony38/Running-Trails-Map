@@ -185,12 +185,20 @@ function SpotViewModel() {
     })
   };
 
-  self.clearSpots = () => {
+  /*
+  self.clearSpots_old = () => {
     while (self.spots().length) {
       // Remove last trail from observable before removing its marker from map.
       googleMap.deleteMarker(self.spots.pop().marker);
     }
     googleMap.map.setCenter(self.userLocation());
+  };
+  */
+
+  self.removeAllSpots = () => {
+    while (self.spots().length) {
+      self.deleteSpotData(self.spots.pop())
+    }
   };
 
   self.deleteSpot = spot => {
@@ -213,7 +221,6 @@ function SpotViewModel() {
       if (tooFar) { self.deleteSpotData(spot) }
       return tooFar;
     })
-
   };
 
   self.addMessage = message => {
