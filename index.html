@@ -47,7 +47,6 @@
             </span>
           </div>
         </form>
-
       </div>
     </div>
   </nav>
@@ -71,6 +70,7 @@
         <div id="map"></div>
         <div id="info-window">
           <div id="info-window-content">
+            <div id="pano" data-bind="style: { display: displayPano() ? 'inherit' : 'none' }"></div>
             <!-- ko with: currentSpot -->
               <div class='trailapi'>
                 <h1 data-bind="text: title"></h1>

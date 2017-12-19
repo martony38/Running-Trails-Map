@@ -2,6 +2,14 @@ function GoogleMap() {
   const self = this;
 
   self.map = null;
+  self.mapOptions = {
+    zoom: 13,
+    mapTypeControl: true,
+    streetViewControl: false,
+    mapTypeControlOptions: {
+      mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain']
+    }
+  }
   self.infoWindow = null;
   self.bounds= null;
   self.userLocationMarker = null;
@@ -9,14 +17,10 @@ function GoogleMap() {
 
   // Callback when google maps API finish to load asynchronously
   self.init = () => {
-    self.map = new google.maps.Map(document.getElementById('map'), {
-      center: spotViewModel.userLocation(),
-      zoom: 13,
-      mapTypeControl: true,
-      mapTypeControlOptions: {
-        mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain']
-      }
-    });
+
+    self.mapOptions['center'] = spotViewModel.userLocation();
+
+    self.map = new google.maps.Map(document.getElementById('map'), self.mapOptions);
 
     self.trailIcon = {
       path: 'M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z',
@@ -26,9 +30,6 @@ function GoogleMap() {
       strokeWeight: 0,
       scale: 1.5
     }
-
-
-
 
     //self.map.addListener('center_changed', spotViewModel.setUserLocation);
 
@@ -115,9 +116,31 @@ function GoogleMap() {
     self.infoWindow.close();
     self.toggleBounce(marker);
     setTimeout(() => {
+      self.getPanorama(marker.getPosition())
       self.toggleBounce(marker);
       self.infoWindow.open(self.map, marker);
     }, 2000);
+  };
+
+  self.getPanorama = position => {
+    const streetViewService = new google.maps.StreetViewService();
+    streetViewService.getPanorama({location: position, preference: 'nearest', radius: 200}, function(StreetViewPanoramaData, StreetViewStatus) {
+      if (StreetViewStatus == google.maps.StreetViewStatus.OK) {
+        const panorama = new google.maps.StreetViewPanorama(
+          document.getElementById('pano'), {
+            position: StreetViewPanoramaData.location.latLng,
+            //visible: true,
+            pov: {
+              heading: 0,
+              pitch: 0
+            }
+          });
+        self.map.setStreetView(panorama);
+        spotViewModel.displayPano(true)
+      } else {
+        spotViewModel.displayPano(false)
+      }
+    });
   };
 
   self.initMarker = spot => {

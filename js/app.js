@@ -18,6 +18,8 @@ function SpotViewModel() {
   self.messages = ko.observableArray([]);
   self.displayMessages = ko.observable(false);
 
+  self.displayPano = ko.observable(false);
+
   // Set default location to Pittsburgh, PA, USA
   self.userLocation = ko.observable({ lat: 40.440624, lng: -79.995888 });
   self.searchRadius = ko.observable(60);
