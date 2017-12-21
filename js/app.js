@@ -1,5 +1,6 @@
 let Spot = function(data) {
   this.deleteEnabled = ko.observable(false);
+  // TODO: Maybe remove trails and articles from observableArray
   this.trails = ko.observable('trails' in data ? data.trails : null);
   this.articles = ko.observable('articles' in data ? data.articles : null);
   this.location = data.location;
@@ -77,7 +78,7 @@ function SpotViewModel() {
         } else {
           // Display error message if database empty.
           self.addMessage({
-            messageText: `Could not find any saved trails, click "Find Trails Near Me" to start adding trails to the map.`,
+            messageText: `Could not find any saved trails, click "Find Trails" to start adding trails to the map.`,
             messageClass: 'alert-warning'
           });
         }
@@ -125,9 +126,8 @@ function SpotViewModel() {
     trailAPI.findTrails(self.userLocation(), self.searchRadius());
   };
 
-  self.addSpot = data => {
-    let spot = data;
-    spot['firebaseKey'] = spotModel.saveSpot(spot);
+  self.addSpot = spotData => {
+    const spot = new Spot(spotData)
     self.spots.push(spot);
     googleMap.initMarker(spot);
   };
@@ -181,21 +181,35 @@ function SpotViewModel() {
       googleMap.userLocationMarker.setMap(googleMap.map);
     }).catch((errorMessage) => {
       spotViewModel.addMessage({
-        messageText: `${errorMessage} Drag the running man icon to your location, then click "Find Trails Near Me"`,
+        messageText: `${errorMessage} Drag the running man icon to your location, then click "Find Trails"`,
         messageClass: 'alert-warning'
       });
     })
   };
 
-  /*
-  self.clearSpots_old = () => {
-    while (self.spots().length) {
-      // Remove last trail from observable before removing its marker from map.
-      googleMap.deleteMarker(self.spots.pop().marker);
+  self.saveSpot = spot => {
+    if (typeof spot.firebaseKey != 'undefined') {
+      self.addMessage({
+        messageText: 'Spot already saved.',
+        messageClass: 'alert-info'
+      });
+    } else {
+      spot['firebaseKey'] = spotModel.saveSpot(spot);
+      if (typeof spot.firebaseKey != 'undefined') {
+        self.addMessage({
+          messageText: 'Spot has been saved.',
+          messageClass: 'alert-success'
+        });
+        // Notify knockout that currentSpot object has been updated.
+        self.currentSpot.valueHasMutated();
+      } else {
+        self.addMessage({
+          messageText: 'Error: Spot has not been saved.',
+          messageClass: 'alert-danger'
+        });
+      }
     }
-    googleMap.map.setCenter(self.userLocation());
   };
-  */
 
   self.removeAllSpots = () => {
     while (self.spots().length) {
@@ -207,6 +221,10 @@ function SpotViewModel() {
     self.deleteSpotData(spot)
     // Remove spot from observable.
     self.spots.remove(spot);
+    self.addMessage({
+      messageText: 'Spot has been deleted.',
+      messageClass: 'alert-info'
+    });
   };
 
   self.deleteSpotData = spot => {
@@ -228,7 +246,7 @@ function SpotViewModel() {
   self.addMessage = message => {
     self.messages().forEach(message => {
       // Remove previous info messages.
-      if (message.messageClass == 'alert-info') { self.removeMessage(message) }
+      if (message.messageClass == 'alert-info' || message.messageClass == 'alert-success') { self.removeMessage(message) }
     });
 
     self.messages.push(message);
@@ -244,11 +262,11 @@ function SpotViewModel() {
   };
 
   self.enableDelete = function() {
-    this.deleteEnabled = true;
+    this.deleteEnabled(true);
   };
 
   self.disableDelete = function() {
-    this.deleteEnabled = false;
+    this.deleteEnabled(false);
   };
 }
 

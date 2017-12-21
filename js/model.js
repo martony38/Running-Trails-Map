@@ -16,8 +16,14 @@ function SpotModel() {
     }
   };
 
-  self.saveSpot = data => {
+  self.saveSpot = spot => {
     if (typeof firebase != 'undefined') {
+      // Make a copy of only the necessary info before saving.
+      const data = {
+        description: spot.description,
+        location: spot.location,
+        title: spot.title
+      };
       const newRef = firebase.database().ref('spots').push(data);
       return newRef.key;
     }
