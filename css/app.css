@@ -14,6 +14,18 @@
 #pano {
   width: 100%;
   height: 200px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0px 10px 28px -14px rgba(122,117,122,1);
+  -moz-box-shadow: 0px 10px 28px -14px rgba(122,117,122,1);
+  box-shadow: 0px 10px 28px -14px rgba(122,117,122,1);
+}
+
+.messages {
+  padding-right: 0px;
+  padding-left: 0px;
+  position: sticky;
+  top: 0px;
+  z-index: 3;
 }
 
 .no-bottom-margin {
@@ -26,14 +38,52 @@
   padding-left: 0px;
 }
 
-.reduced-margin {
-  margin-top: 10px;
-  margin-bottom: 10px;
+.spot-list {
+  height: calc(100% - 34px);
+}
+
+.vertical-align {
+  display: flex;
+  align-items: center;
+}
+
+.no-margin {
+  margin: 0px;
 }
 
 .scrollable {
   max-height: 100vh;
   overflow: scroll;
+}
+
+.trail-type {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+.trail-info {
+  margin-bottom: 5px;
+}
+
+.wikipedia-article {
+  font-weight: bold;
+}
+
+.btn-delete-spot {
+  float: right;
+  display: none;
+}
+
+.text-overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navbar-form > .form-group > label {
+  color: #777;
+  font-weight: normal;
 }
 
 @media screen and (min-width: 768px) {
@@ -44,9 +94,16 @@
     height: 100%;
   }
   .navbar-form .input-group>.form-control.trail-filter {
-    width: 360px;
+    width: 160px;
   }
   #search-radius {
     width: 50px;
+  }
+}
+
+@media screen and (min-width: 1367px) {
+  .btn-delete-spot {
+    /* Display delete icon in the list items for large screens (iPad Pro has 1366 px)*/
+    display: inline-block;
   }
 }

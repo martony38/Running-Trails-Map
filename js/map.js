@@ -19,7 +19,6 @@ function GoogleMap() {
   self.init = () => {
 
     self.mapOptions['center'] = spotViewModel.userLocation();
-
     self.map = new google.maps.Map(document.getElementById('map'), self.mapOptions);
 
     self.trailIcon = {
@@ -30,8 +29,6 @@ function GoogleMap() {
       strokeWeight: 0,
       scale: 1.5
     }
-
-    //self.map.addListener('center_changed', spotViewModel.setUserLocation);
 
     self.infoWindow = new google.maps.InfoWindow();
     self.infoWindow.setContent(document.getElementById('info-window-content'));
@@ -44,30 +41,6 @@ function GoogleMap() {
       });
     }
   };
-
-/*
-  self.initializeMarkers_old = () => {
-    const trails = spotViewModel.trails();
-    if (trails.length > 0) {
-      // If a list of trails already exist and was successfully retrieved
-      // from the Firebase database, initialize corresponding markers on
-      // the map.
-      for (const trail of trails) { self.initMarker(trail) };
-    } else {
-      // If no trails can be found, get user location and search for trails
-      // using the TrailAPI.
-      spotViewModel.getUserLocation().then(() => {
-        self.map.setCenter(spotViewModel.userLocation());
-        spotViewModel.findTrails();
-      }).catch((errorMessage) => {
-        spotViewModel.addMessage({
-          messageText: `${errorMessage} Drag the running man icon to your location, then click "Find Trails Near Me"`,
-          messageClass: 'alert-warning'
-        });
-      })
-    }
-  };
-*/
 
   self.initializeMarkers = () => {
     // Add a marker to the user location.
@@ -85,7 +58,6 @@ function GoogleMap() {
       map: self.map,
       animation: google.maps.Animation.DROP,
       draggable: true,
-      //label: 'test',
       icon: userIcon
     });
 
@@ -129,7 +101,7 @@ function GoogleMap() {
         const panorama = new google.maps.StreetViewPanorama(
           document.getElementById('pano'), {
             position: StreetViewPanoramaData.location.latLng,
-            //visible: true,
+            addressControl: false,
             pov: {
               heading: 0,
               pitch: 0
@@ -138,6 +110,12 @@ function GoogleMap() {
         self.map.setStreetView(panorama);
         spotViewModel.displayPano(true)
       } else {
+        /*
+        spotViewModel.addMessage({
+          messageText: 'StreetView not available for this location.',
+          messageClass: 'alert-info'
+        });
+        */
         spotViewModel.displayPano(false)
       }
     });
