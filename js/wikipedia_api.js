@@ -8,7 +8,7 @@ function WikipediaAPI() {
         messageText: 'Error: Wikipedia Articles Could Not Be Loaded.',
         messageClass: 'alert-danger'
       });
-    }, 2000);
+    }, 5000);
 
     $.ajax({
       url: 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=' + spotViewModel.currentSpot().title,
