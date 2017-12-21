@@ -15,7 +15,7 @@ function GoogleMap() {
   self.userLocationMarker = null;
   self.trailIcon = null;
 
-  // Callback when google maps API finish to load asynchronously
+  // Callback when google maps API finish to load asynchronously.
   self.init = () => {
 
     self.mapOptions['center'] = spotViewModel.userLocation();
@@ -36,7 +36,7 @@ function GoogleMap() {
     self.bounds = new google.maps.LatLngBounds();
     if (typeof spotViewModel.initializeSpots != 'undefined') {
       spotViewModel.initializeSpots.then(self.initializeMarkers).then(() => {
-        spotViewModel.filteredSpots.subscribe(self.resetZoom);
+        spotViewModel.filteredSpots.subscribe(self.resetMapBounds);
         spotViewModel.filter.valueHasMutated();
       });
     }
@@ -71,7 +71,7 @@ function GoogleMap() {
   };
 
   self.saveInfoWindow = () => {
-    // Save content of infowindow on the html to keep knockout functionality
+    // Save content of infowindow on the html to keep knockout functionality.
     document.getElementById('info-window').appendChild(self.infoWindow.getContent());
   };
 
@@ -133,10 +133,6 @@ function GoogleMap() {
 
     // Add listener to click event on marker.
     spot.marker.addListener('click', () => { spotViewModel.setCurrentSpot(spot) });
-
-    // Extend the boundaries of the map to include marker.
-    //self.bounds.extend(trail.marker.position);
-    //self.map.fitBounds(self.bounds);
   };
 
   self.hideMarker = marker => {
@@ -145,7 +141,6 @@ function GoogleMap() {
       self.infoWindow.close();
     }
     marker.setMap(null);
-    //self.resetZoom();
   };
 
   self.deleteMarker = marker => {
@@ -159,9 +154,11 @@ function GoogleMap() {
     return google.maps.geometry.spherical.computeDistanceBetween(fromCoords, toCoords);
   };
 
-  self.resetZoom = spotList => {
+  self.resetMapBounds = spotList => {
     if (spotList.length > 1) {
       self.bounds = new google.maps.LatLngBounds();
+
+      // Extend the boundaries of the map to include all markers.
       for (const spot of spotList) {
         if ('marker' in spot && spot.marker.getMap() === googleMap.map) { self.bounds.extend(spot.marker.position) }
       }

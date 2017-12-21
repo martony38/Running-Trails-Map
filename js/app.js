@@ -86,7 +86,7 @@ function SpotViewModel() {
       }).catch(error => {
         // Display error message if Firebase promise rejected.
         self.addMessage({
-          messageText: 'Error: Failed to retrieve trails from database',
+          messageText: 'Error: Failed to retrieve trails from database. Try reloading the page.',
           messageClass: 'alert-danger'
         });
       });
@@ -175,13 +175,13 @@ function SpotViewModel() {
     self.getUserLocation().then(() => {
       // Recenter the map on the user location and reposition marker.
       googleMap.userLocationMarker.setMap(null);
-      googleMap.resetZoom([]);
+      googleMap.resetMapBounds([]);
       googleMap.userLocationMarker.setPosition(self.userLocation())
       googleMap.userLocationMarker.setAnimation(google.maps.Animation.DROP)
       googleMap.userLocationMarker.setMap(googleMap.map);
     }).catch((errorMessage) => {
       spotViewModel.addMessage({
-        messageText: `${errorMessage} Drag the running man icon to your location, then click "Find Trails"`,
+        messageText: `${errorMessage} Drag the running man icon to your location, then click "Find Trails".`,
         messageClass: 'alert-warning'
       });
     })
@@ -190,21 +190,21 @@ function SpotViewModel() {
   self.saveSpot = spot => {
     if (typeof spot.firebaseKey != 'undefined') {
       self.addMessage({
-        messageText: 'Spot already saved.',
+        messageText: 'Trail already saved.',
         messageClass: 'alert-info'
       });
     } else {
       spot['firebaseKey'] = spotModel.saveSpot(spot);
       if (typeof spot.firebaseKey != 'undefined') {
         self.addMessage({
-          messageText: 'Spot has been saved.',
+          messageText: 'Trail has been saved.',
           messageClass: 'alert-success'
         });
         // Notify knockout that currentSpot object has been updated.
         self.currentSpot.valueHasMutated();
       } else {
         self.addMessage({
-          messageText: 'Error: Spot has not been saved.',
+          messageText: 'Error: Trail has not been saved.',
           messageClass: 'alert-danger'
         });
       }
@@ -222,7 +222,7 @@ function SpotViewModel() {
     // Remove spot from observable.
     self.spots.remove(spot);
     self.addMessage({
-      messageText: 'Spot has been deleted.',
+      messageText: 'Trail has been deleted.',
       messageClass: 'alert-info'
     });
   };

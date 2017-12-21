@@ -10,7 +10,7 @@ function SpotModel() {
       });
     } else {
       spotViewModel.addMessage({
-        messageText: 'Error: Could not connect to the database service. Your progress will not be saved!!! Check your internet connection or firewall.',
+        messageText: 'Error: Could not connect to the database service. Your progress will not be saved! Check your internet connection or firewall and try reloading the page.',
         messageClass: 'alert-danger'
       });
     }

@@ -5,14 +5,13 @@ function WikipediaAPI() {
     // Use a timeout to disply error message if API call fail.
     const errorTimeout = setTimeout(() => {
       spotViewModel.addMessage({
-        messageText: 'Error: Wikipedia Articles Could Not Be Loaded',
+        messageText: 'Error: Wikipedia Articles Could Not Be Loaded.',
         messageClass: 'alert-danger'
       });
     }, 2000);
 
     $.ajax({
       url: 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=' + spotViewModel.currentSpot().title,
-      //url: 'http://wikitravel.org/wiki/en/api.php?action=opensearch&format=json&search=' + spotViewModel.currentSpot().title,
       dataType: 'jsonp',
       success(data) {
         let articles = [];
