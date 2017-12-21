@@ -34,7 +34,7 @@ function SpotViewModel() {
     } else {
       self.spots().forEach(spot => {
         const marker = spot.marker;
-        if (spot.title.toLowerCase().search(self.filter().toLowerCase()) !== -1) {
+        if (spot.title.toLowerCase().indexOf(self.filter().toLowerCase()) !== -1) {
           searchResults.push(spot);
           if (marker !== undefined) { marker.setMap(googleMap.map) }
         } else {
