@@ -11,6 +11,11 @@
   display: none;
 }
 
+#info-window-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
 #pano {
   width: 100%;
   height: 200px;
@@ -54,6 +59,10 @@
 .scrollable {
   max-height: 100vh;
   overflow: scroll;
+}
+
+.btn-margin {
+  margin-top: 5px;
 }
 
 .trail-type {
