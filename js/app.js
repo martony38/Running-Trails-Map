@@ -1,8 +1,7 @@
 let Spot = function(data) {
   this.deleteEnabled = ko.observable(false);
-  // TODO: Maybe remove trails and articles from observableArray
-  this.trails = ko.observable('trails' in data ? data.trails : null);
-  this.articles = ko.observable('articles' in data ? data.articles : null);
+  this.trails = 'trails' in data ? data.trails : null;
+  this.articles = 'articles' in data ? data.articles : null;
   this.location = data.location;
   this.title = data.title;
   this.description = data.description;
