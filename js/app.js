@@ -1,12 +1,27 @@
-let Spot = function(data) {
-  this.deleteEnabled = ko.observable(false);
-  this.trails = 'trails' in data ? data.trails : null;
-  this.articles = 'articles' in data ? data.articles : null;
-  this.location = data.location;
-  this.title = data.title;
-  this.description = data.description;
-  this.firebaseKey = data.firebaseKey;
-};
+/**
+* @description Represents a spot/location with running trails nearby
+* @constructor
+* @param {Object} data - A object representing the spot.
+* @param {string} data.title - The name of the spot.
+* @param {string} data.description - The spot description.
+* @param {Object} data.location - A google.maps.LatLngLiteral object representing the coordinates of the spot.
+* @param {number} data.location.lat - The latitude in degrees.
+* @param {number} data.location.lng - The longitude in degrees.
+* @param {Object[]} data.trails - The trails from trailapi located at this spot.
+* @param {Object[]} data.articles - The articles from Wikipedia associated to this spot.
+* @param {string} data.firebaseKey - The key of the node in Firebase database corresponding to this spot.
+*/
+class Spot {
+  constructor(data) {
+    this.deleteEnabled = ko.observable(false);
+    this.trails = 'trails' in data ? data.trails : null;
+    this.articles = 'articles' in data ? data.articles : null;
+    this.location = data.location;
+    this.title = data.title;
+    this.description = data.description;
+    this.firebaseKey = data.firebaseKey;
+  }
+}
 
 function SpotViewModel() {
   const self = this;
@@ -48,6 +63,10 @@ function SpotViewModel() {
     });
   });
 
+  /**
+  * @description Calculate distance between user and farthest running spot displayed in the map
+  * @returns {number} Distance in miles
+  */
   self.filteredSpotsRadius = ko.computed(() => {
     let result = 0;
     self.filteredSpots().forEach(spot => {
@@ -269,11 +288,15 @@ function SpotViewModel() {
   };
 }
 
+/**
+* @description
+* Custom Knockout JS binding. If true and element outside of its parent div, scroll up (or down
+* depending on the position) to the bound element.
+* Inspired from https://www.snip2code.com/Snippet/54357/ScrollTo-binding-for-knockout
+* @example
+* <li data-bind="scrollTo: boolean">
+*/
 ko.bindingHandlers.scrollTo = {
-  // Usage: data-bind="scrollTo: boolean".
-  // If true and element outside of its parent div, scroll up (or down
-  // depending on the position) to the bound element.
-  // Inspired from https://www.snip2code.com/Snippet/54357/ScrollTo-binding-for-knockout
   update: function(element, valueAccessor) {
     const valueUnwrapped = ko.unwrap(valueAccessor());
     if (valueUnwrapped == true) {
