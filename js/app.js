@@ -24,9 +24,10 @@ class Spot {
 }
 
 class Message {
-  constructor(text, type) {
-    this.text = text;
-    this.type = type;
+  constructor(msgText, msgType) {
+    this.text = msgText;
+    this.type = msgType;
+    this.timeoutDone = new Promise(resolve => setTimeout(() => resolve(), 2000));
   }
 }
 
@@ -95,24 +96,15 @@ class SpotViewModel {
 
     this.saveSpot = spot => {
       if (typeof spot.firebaseKey != 'undefined') {
-        this.addMessage({
-          messageText: 'Trail already saved.',
-          messageClass: 'alert-info'
-        });
+        this.addMessage('Trail already saved.', 'alert-info');
       } else {
         spot['firebaseKey'] = this.saveSpotInDb(spot);
         if (typeof spot.firebaseKey != 'undefined') {
-          this.addMessage({
-            messageText: 'Trail has been saved.',
-            messageClass: 'alert-success'
-          });
+          this.addMessage('Trail has been saved.', 'alert-success');
           // Notify knockout that currentSpot object has been updated.
           this.currentSpot.valueHasMutated();
         } else {
-          this.addMessage({
-            messageText: 'Error: Trail has not been saved.',
-            messageClass: 'alert-danger'
-          });
+          this.addMessage('Error: Trail has not been saved.', 'alert-danger');
         }
       }
     };
@@ -121,10 +113,7 @@ class SpotViewModel {
       this.deleteSpotData(spot)
       // Remove spot from observable.
       this.spots.remove(spot);
-      this.addMessage({
-        messageText: 'Trail has been deleted.',
-        messageClass: 'alert-info'
-      });
+      this.addMessage('Trail has been deleted.', 'alert-info');
     };
   }
 
@@ -147,24 +136,24 @@ class SpotViewModel {
           });
         } else {
           // Display error message if database empty.
-          this.addMessage({
-            messageText: `Could not find any saved trails, click "Find Trails" to start adding trails to the map.`,
-            messageClass: 'alert-warning'
-          });
+          this.addMessage(
+            `Could not find any saved trails, click "Find Trails" to start adding trails to the map.`,
+            'alert-warning'
+          );
         }
         return this.spots();
       }).catch(error => {
         // Display error message if Firebase promise rejected.
-        this.addMessage({
-          messageText: 'Error: Failed to retrieve trails from database. Try reloading the page.',
-          messageClass: 'alert-danger'
-        });
+        this.addMessage(
+          'Error: Failed to retrieve trails from database. Try reloading the page.',
+          'alert-danger'
+        );
       });;
     } else {
-      this.addMessage({
-        messageText: 'Error: Could not connect to the database service. Your progress will not be saved! Check your internet connection or firewall and try reloading the page.',
-        messageClass: 'alert-danger'
-      });
+      this.addMessage(
+        'Error: Could not connect to the database service. Your progress will not be saved! Check your internet connection or firewall and try reloading the page.',
+        'alert-danger'
+      );
     }
   }
 
@@ -180,10 +169,7 @@ class SpotViewModel {
     this.saveUserLocation(this.userLocation())
 
     // Look for trails nearby user.
-    this.addMessage({
-      messageText: 'Finding nearby trails... Please wait.',
-      messageClass: 'alert-info'
-    });
+    this.addMessage('Finding nearby trails... Please wait.', 'alert-info');
     trailAPI.findTrails(this.userLocation(), this.searchRadius());
   }
 
@@ -203,21 +189,15 @@ class SpotViewModel {
 
   findUserLocation() {
     if (!navigator.geolocation){
-      this.addMessage({
-        messageText: `Your browser doesn't support geolocation. Drag the running man icon to your location, then click "Find Trails".`,
-        messageClass: 'alert-warning'
-      });
+      this.addMessage(
+        `Your browser doesn't support geolocation. Drag the running man icon to your location, then click "Find Trails".`,
+        'alert-warning'
+      );
     } else {
-      this.addMessage({
-        messageText: 'Finding current location... Please wait.',
-        messageClass: 'alert-info'
-      });
+      this.addMessage('Finding current location... Please wait.', 'alert-info');
       navigator.geolocation.getCurrentPosition(position => {
         this.userLocation({lat: position.coords.latitude, lng: position.coords.longitude});
-        this.addMessage({
-          messageText: 'Location found.',
-          messageClass: 'alert-info'
-        });
+        this.addMessage('Location found.', 'alert-info');
         // Recenter the map on the user location and reposition marker.
         googleMap.userLocationMarker.setMap(null);
         googleMap.resetMapBounds([]);
@@ -226,10 +206,10 @@ class SpotViewModel {
         googleMap.userLocationMarker.setMap(googleMap.map);
         this.saveUserLocation(this.userLocation())
       }, () => {
-        this.addMessage({
-          messageText: `The Geolocation service failed. Drag the running man icon to your location, then click "Find Trails".`,
-          messageClass: 'alert-warning'
-        });
+        this.addMessage(
+          `The Geolocation service failed. Drag the running man icon to your location, then click "Find Trails".`,
+          'alert-warning'
+        );
       });
     }
   }
@@ -256,16 +236,14 @@ class SpotViewModel {
     })
   }
 
-  addMessage(message) {
-    this.messages().forEach(message => {
+  addMessage(msgText, msgType) {
+    this.messages().forEach(msg => {
       // Remove previous info messages.
-      if (message.messageClass == 'alert-info' || message.messageClass == 'alert-success') { this.removeMessage(message) }
+      if (msg.type == 'alert-info' || msg.type == 'alert-success') { this.removeMessage(msg) }
     });
 
-    this.messages.push(message);
+    this.messages.push(new Message(msgText, msgType));
     if (!this.displayMessages()) { this.displayMessages(true) }
-
-    message['timeoutDone'] = new Promise(resolve => setTimeout(() => resolve(), 2000));
   }
 
   removeMessage(message) { message.timeoutDone.then(() => this.messages.remove(message)) }

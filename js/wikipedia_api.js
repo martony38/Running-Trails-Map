@@ -3,10 +3,7 @@ class WikipediaAPI {
     this.getArticles = () => {
       // Use a timeout to disply error message if API call fail.
       const errorTimeout = setTimeout(() => {
-        spotViewModel.addMessage({
-          messageText: 'Error: Wikipedia Articles Could Not Be Loaded.',
-          messageClass: 'alert-danger'
-        });
+        spotViewModel.addMessage('Error: Wikipedia Articles Could Not Be Loaded.', 'alert-danger');
       }, 10000);
 
       $.ajax({

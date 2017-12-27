@@ -47,9 +47,9 @@
     <div class="row full-height">
       <div data-bind="style: { display: displayMessages() ? 'inherit' : 'none' }" class="col-sm-12 messages">
         <!-- ko foreach: messages -->
-          <div class="alert alert-dismissible no-margin" data-bind="css: messageClass" role="alert">
+          <div class="alert alert-dismissible no-margin" data-bind="css: type" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <span data-bind="text: messageText"></span>
+            <span data-bind="text: text"></span>
           </div>
         <!-- /ko -->
       </div>

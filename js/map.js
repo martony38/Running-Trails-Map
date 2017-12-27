@@ -119,12 +119,6 @@ class GoogleMap {
         this.map.setStreetView(panorama);
         spotViewModel.displayPano(true)
       } else {
-        /*
-        spotViewModel.addMessage({
-          messageText: 'StreetView not available for this location.',
-          messageClass: 'alert-info'
-        });
-        */
         spotViewModel.displayPano(false)
       }
     });

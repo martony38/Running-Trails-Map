@@ -46,11 +46,10 @@ class TrailAPI {
           }
         }
 
-        spotViewModel.addMessage({
-          messageText: `${trailFoundCounter} ${pluralize('trail', trailFoundCounter)} found.
-            ${trailAddedCounter} ${pluralize('trail', trailAddedCounter)} ${pluralize('was', trailAddedCounter)} added to the map.`,
-          messageClass: 'alert-info'
-        });
+        spotViewModel.addMessage(
+          `${trailFoundCounter} ${pluralize('trail', trailFoundCounter)} found. ${trailAddedCounter} ${pluralize('trail', trailAddedCounter)} ${pluralize('was', trailAddedCounter)} added to the map.`,
+          'alert-info'
+        );
       }).fail(this.errorMessage);
     };
 
@@ -70,10 +69,10 @@ class TrailAPI {
     };
 
     this.errorMessage = () => {
-      spotViewModel.addMessage({
-        messageText: 'Error while connecting to trailapi, please check your internet connection or firewall and try again.',
-        messageClass: 'alert-danger'
-      });
+      spotViewModel.addMessage(
+        'Error while connecting to trailapi, please check your internet connection or firewall and try again.',
+        'alert-danger'
+      );
     };
   }
 }
