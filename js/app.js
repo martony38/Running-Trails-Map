@@ -224,6 +224,7 @@ class SpotViewModel {
         googleMap.userLocationMarker.setPosition(this.userLocation())
         googleMap.userLocationMarker.setAnimation(google.maps.Animation.DROP)
         googleMap.userLocationMarker.setMap(googleMap.map);
+        this.saveUserLocation(this.userLocation())
       }, () => {
         this.addMessage({
           messageText: `The Geolocation service failed. Drag the running man icon to your location, then click "Find Trails".`,
