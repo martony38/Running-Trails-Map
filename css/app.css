@@ -31,6 +31,7 @@
   position: sticky;
   top: 0px;
   z-index: 3;
+  min-height: 0px;
 }
 
 .no-bottom-margin {
@@ -45,6 +46,15 @@
 
 .spot-list {
   height: calc(100% - 34px);
+
+  /*
+  Set to other than static so that when JQuery position() is called on one of
+  its children it returns the position the children relative to spot-list.
+  This is needed for custom Knockout binding scrollTo to work correctly.
+  More info:
+  https://stackoverflow.com/questions/2842432/jquery-position-isnt-returning-offset-relative-to-parent/2842447
+  */
+  position: relative;
 }
 
 .vertical-align {
