@@ -23,6 +23,12 @@ class Spot {
   }
 }
 
+/**
+* @description Represents an GUI info message
+* @constructor
+* @param {string} text - The text of the message.
+* @param {string} type - The Bootstrap css class associated with this message.
+*/
 class Message {
   constructor(msgText, msgType) {
     this.text = msgText;
@@ -166,7 +172,7 @@ class SpotViewModel {
 
   findSpots() {
     // Save user location in database.
-    this.saveUserLocation(this.userLocation())
+    this.saveUserLocation()
 
     // Look for trails nearby user.
     this.addMessage('Finding nearby trails... Please wait.', 'alert-info');
@@ -198,13 +204,15 @@ class SpotViewModel {
       navigator.geolocation.getCurrentPosition(position => {
         this.userLocation({lat: position.coords.latitude, lng: position.coords.longitude});
         this.addMessage('Location found.', 'alert-info');
+
         // Recenter the map on the user location and reposition marker.
         googleMap.userLocationMarker.setMap(null);
         googleMap.resetMapBounds([]);
         googleMap.userLocationMarker.setPosition(this.userLocation())
         googleMap.userLocationMarker.setAnimation(google.maps.Animation.DROP)
         googleMap.userLocationMarker.setMap(googleMap.map);
-        this.saveUserLocation(this.userLocation())
+
+        this.saveUserLocation()
       }, () => {
         this.addMessage(
           `The Geolocation service failed. Drag the running man icon to your location, then click "Find Trails".`,
@@ -271,15 +279,14 @@ class SpotViewModel {
     }
   }
 
-  saveUserLocation(data) {
+  saveUserLocation() {
     if (typeof firebase != 'undefined') {
       const editRef = firebase.database().ref('user');
-      editRef.set(data);
+      editRef.set(this.userLocation());
     }
   }
 }
 
-// TODO: Update binding to account for height of filter input form.
 /**
 * @description
 * Custom Knockout JS binding. If true and element outside of its parent div, scroll up (or down
