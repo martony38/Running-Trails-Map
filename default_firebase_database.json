@@ -1,0 +1,56 @@
+{
+  "user" : {
+    "lat" : 40.440624,
+    "lng" : -79.995888
+  },
+  "default" : {
+    "LHHT" : {
+      "description" : "no description available",
+      "location" : {
+        "lat" : 39.870637,
+        "lng" : -79.487221
+      },
+      "title" : "Laurel Highland Hiking Trail"
+    },
+    "RCSP" : {
+      "description" : "no description available",
+      "location" : {
+        "lat" : 40.523838,
+        "lng" : -80.448874
+      },
+      "title" : "Raccoon Creek State Park"
+    },
+    "boycePark" : {
+      "description" : "no description available",
+      "location" : {
+        "lat" : 40.46165,
+        "lng" : -79.74658
+      },
+      "title" : "Boyce Park"
+    },
+    "frickPark" : {
+      "description" : "no description available",
+      "location" : {
+        "lat" : 40.43648,
+        "lng" : -79.89697
+      },
+      "title" : "Frick Park"
+    },
+    "northPark" : {
+      "description" : "no description available",
+      "location" : {
+        "lat" : 40.59157,
+        "lng" : -80.01356
+      },
+      "title" : "North Park"
+    },
+    "southPark" : {
+      "description" : "no description available",
+      "location" : {
+        "lat" : 40.32484,
+        "lng" : -80.01636
+      },
+      "title" : "South Park"
+    }
+  }
+}
