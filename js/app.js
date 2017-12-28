@@ -24,7 +24,7 @@ class Spot {
 }
 
 /**
-* @description Represents an GUI info message
+* @description Represents a GUI info message
 * @constructor
 * @param {string} text - The text of the message.
 * @param {string} type - The Bootstrap css class associated with this message.
@@ -77,7 +77,7 @@ class SpotViewModel {
     });
 
     /**
-    * @description Calculate distance between user and farthest running spot displayed in the map
+    * @description Calculate distance between user and farthest running spot displayed on the map
     * @returns {number} Distance in miles
     */
     this.filteredSpotsRadius = ko.computed(() => {
@@ -289,9 +289,11 @@ class SpotViewModel {
 
 /**
 * @description
-* Custom Knockout JS binding. If true and element outside of its parent div, scroll up (or down
-* depending on the position) to the bound element.
-* Inspired from https://www.snip2code.com/Snippet/54357/ScrollTo-binding-for-knockout
+* Custom Knockout JS binding. If true and element outside of its parent div,
+* scroll up (or down depending on the position) to the bound element. In order
+* to work correctly, the parent div must have a css position value different
+* than static (see https://stackoverflow.com/questions/2842432/jquery-position-isnt-returning-offset-relative-to-parent/2842447).
+* Inspired from https://www.snip2code.com/Snippet/54357/ScrollTo-binding-for-knockout.
 * @example
 * <li data-bind="scrollTo: boolean">
 */
