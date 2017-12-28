@@ -148,12 +148,15 @@
   <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-database.js"></script>
   <script>
     // Initialize Firebase
-    var config = {
+    const config = {
       apiKey: "AIzaSyA5basF2YUQKNKrkK8TD3h446mDu1Y64Ws",
       databaseURL: "https://ajax-project-184220.firebaseio.com",
       projectId: "ajax-project-184220"
     };
     firebase.initializeApp(config);
+
+    // TrailAPI key
+    const trailApiKey = "il1HptvEQOmshz8iEZicHy0WzmPYp13U09TjsnhvtyO7URBo3N";
   </script>
   <script src="node_modules/jquery/dist/jquery.min.js"></script>
   <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -163,7 +166,7 @@
   <script src="js/trail_api.js"></script>
   <script src="js/wikipedia_api.js"></script>
   <script src="js/app.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCsq-cspqC3kPEhlTasMA8DPDeTfCaoSSA&v=3&callback=googleMap.init"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyCsq-cspqC3kPEhlTasMA8DPDeTfCaoSSA&v=3&callback=googleMap.init"></script>
 
 </body>
 </html>

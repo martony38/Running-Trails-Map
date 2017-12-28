@@ -7,7 +7,7 @@ class TrailAPI {
         "url": `https://trailapi-trailapi.p.mashape.com/?limit=500&lat=${location.lat}&lon=${location.lng}&radius=${searchRadius}`,
         "method": "GET",
         "headers": {
-          "x-mashape-key": "il1HptvEQOmshz8iEZicHy0WzmPYp13U09TjsnhvtyO7URBo3N"
+          "x-mashape-key": trailApiKey
         }
       };
     };
