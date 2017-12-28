@@ -1,4 +1,4 @@
-# Running Trails App
+# Running Trails Map
 
 Source code for my fifth project for the [Full Stack Web Developer Nanodegree](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd004) (FSWDN) program from Udacity.
 
