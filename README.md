@@ -16,7 +16,7 @@ Open index.html with your favorite browser.
 
 ### Optional: Use your own API keys
 
-Create a Firebase project and add a Firebase Realtime Database by following this [guide](https://firebase.google.com/docs/database/web/start?authuser=0).
+Create a Firebase project and add a Firebase Realtime Database by following this [guide](https://firebase.google.com/docs/database/web/start?authuser=0). Upload the content of *default_firebase_database.json* if you want to populate the database with default locations.
 
 Get a free api key for [TrailAPI](http://www.trailapi.com/).
 
