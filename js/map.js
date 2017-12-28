@@ -32,6 +32,7 @@ class GoogleMap {
       this.infoWindow.setContent(document.getElementById('info-window-content'));
       this.infoWindow.addListener('closeclick', this.saveInfoWindow);
       this.bounds = new google.maps.LatLngBounds();
+      google.maps.event.addDomListener(window, 'resize', () => { this.map.fitBounds(this.bounds) });
       if (typeof spotViewModel.initializeSpots != 'undefined') {
         spotViewModel.initializeSpots.then(this.initializeMarkers).then(() => {
           spotViewModel.filteredSpots.subscribe(this.resetMapBounds);
