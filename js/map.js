@@ -165,6 +165,10 @@ class GoogleMap {
     const toCoords = new google.maps.LatLng(to);
     return google.maps.geometry.spherical.computeDistanceBetween(fromCoords, toCoords);
   }
+
+  loadingErrorHandler() {
+    spotViewModel.addMessage('An error occurred while loading Google Maps API. Please try reloading the page.', 'alert-danger');
+  }
 }
 
 // Browser will throw an error if "const" or "let" are used for the googleMap

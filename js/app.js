@@ -151,7 +151,7 @@ class SpotViewModel {
       }).catch(error => {
         // Display error message if Firebase promise rejected.
         this.addMessage(
-          'Error: Failed to retrieve trails from database. Try reloading the page.',
+          'An error occurred while retrieving trails from database. Please try reloading the page.',
           'alert-danger'
         );
       });;
