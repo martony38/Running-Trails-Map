@@ -34,6 +34,10 @@
   min-height: 0px;
 }
 
+.action-footer {
+  background-color: black;
+}
+
 .no-bottom-margin {
   margin-bottom: 0px;
 }
@@ -76,7 +80,7 @@
 }
 
 .btn-margin {
-  margin-top: 5px;
+  margin: 5px;
 }
 
 .trail-type {
@@ -93,7 +97,7 @@
   font-weight: bold;
 }
 
-.btn-delete-spot {
+.btn-action-spot {
   float: right;
   display: none;
 }
@@ -129,5 +133,9 @@
   .btn-delete-spot {
     /* Display delete icon in the list items for large screens (iPad Pro has 1366 px)*/
     display: inline-block;
+  }
+  .btn-save-spot {
+    display: inline-block;
+    margin-right: 5px;
   }
 }

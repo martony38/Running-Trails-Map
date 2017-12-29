@@ -14,6 +14,7 @@
 class Spot {
   constructor(data) {
     this.deleteEnabled = ko.observable(false);
+    this.saveEnabled = ko.observable(false);
     this.trails = 'trails' in data ? data.trails : null;
     this.articles = 'articles' in data ? data.articles : null;
     this.location = data.location;
@@ -46,11 +47,11 @@ class SpotViewModel {
     this.messages = ko.observableArray([]);
     this.displayMessages = ko.observable(false);
 
-    this.displayPano = ko.observable(false);
-
     // Set default location to Pittsburgh, PA, USA
     this.userLocation = ko.observable({ lat: 40.440624, lng: -79.995888 });
     this.searchRadius = ko.observable(60);
+
+    this.displayActionButtons = ko.observable(false);
 
     // Filter trails/markers.
     this.filteredSpots = ko.computed(() => {
@@ -94,6 +95,7 @@ class SpotViewModel {
       trailAPI.getTrailInfo();
       wikipediaAPI.getArticles();
       googleMap.showInfoWindow(spot.marker);
+      this.displayActionButtons(true);
 
       // Allow default behavior of "a" links (go to the #map div). Useful for
       // small devices as the map will appear below the list of trails.
@@ -119,6 +121,9 @@ class SpotViewModel {
       this.deleteSpotData(spot)
       // Remove spot from observable.
       this.spots.remove(spot);
+      if (spot === this.currentSpot()) {
+        this.currentSpot(null)
+      }
       this.addMessage('Trail has been deleted.', 'alert-info');
     };
   }
@@ -256,9 +261,15 @@ class SpotViewModel {
 
   removeMessage(message) { message.timeoutDone.then(() => this.messages.remove(message)) }
 
-  enableDelete(spot) { spot.deleteEnabled(true) }
+  enableActions(spot) {
+    spot.deleteEnabled(true);
+    typeof spot.firebaseKey != 'undefined' ? spot.saveEnabled(false) : spot.saveEnabled(true);
+  }
 
-  disableDelete(spot) { spot.deleteEnabled(false) }
+  disableActions(spot) {
+    spot.deleteEnabled(false);
+    spot.saveEnabled(false);
+  }
 
   saveSpotInDb(spot) {
     if (typeof firebase != 'undefined') {

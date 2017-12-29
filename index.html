@@ -61,85 +61,21 @@
           </span>
         </div>
         <div data-bind="foreach: filteredSpots" class="spot-list list-group full-height no-bottom-margin scrollable">
-          <a href="#map" data-bind="event: { mouseover: $parent.enableDelete, mouseout: $parent.disableDelete }, click: $parent.setCurrentSpot, scrollTo: $data === $parent.currentSpot(), css: { active: $data === $parent.currentSpot() }" class="list-group-item text-overflow">
+          <a href="#map" data-bind="event: { mouseover: $parent.enableActions, mouseout: $parent.disableActions }, click: $parent.setCurrentSpot, scrollTo: $data === $parent.currentSpot(), css: { active: $data === $parent.currentSpot() }" class="list-group-item text-overflow">
             <span data-bind="text: title"></span>
-            <span class="glyphicon glyphicon-trash btn-delete-spot" aria-hidden="true" data-bind="style: { visibility: $data.deleteEnabled() ? 'visible' : 'hidden' }, click: $parent.deleteSpot, clickBubble: false"></span>
+            <span class="glyphicon glyphicon-trash btn-action-spot btn-delete-spot" aria-hidden="true" data-bind="style: { visibility: $data.deleteEnabled() ? 'visible' : 'hidden' }, click: $parent.deleteSpot, clickBubble: false"></span>
+            <span class="glyphicon glyphicon-save btn-action-spot btn-save-spot" aria-hidden="true" data-bind="style: { visibility: $data.saveEnabled() ? 'visible' : 'hidden' }, click: $parent.saveSpot, clickBubble: false"></span>
           </a>
         </div>
       </div>
       <div class="col-sm-9 full-height">
         <div id="map"></div>
-        <div id="info-window">
-          <div id="info-window-content" class="container-fluid">
-            <div class="row" data-bind="style: { display: displayPano() ? 'inherit' : 'none' }">
-              <div class="col-md-12">
-                <div id="pano"></div>
-              </div>
-            </div>
-            <!-- ko with: currentSpot -->
-              <div class="row vertical-align">
-                <div class="col-md-9">
-                  <h2 data-bind="text: title"></h2>
-                </div>
-                <div class="col-md-3 text-right">
-                  <a data-bind="click: $parent.saveSpot, css: { disabled: typeof firebaseKey != 'undefined' }, text: typeof firebaseKey != 'undefined' ? 'Saved' : 'Save'" class="btn btn-success btn-sm btn-margin">Save</a>
-                  <a data-bind="click: $parent.deleteSpot" class="btn btn-danger btn-sm btn-margin">Delete</a>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-12">
-                  <p data-bind="html: description" class="description text-justify"></p>
-                </div>
-              </div>
-
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h3 class="panel-title">Running Trails</h3>
-                </div>
-                <div class="panel-body">
-                  <!-- ko foreach: trails -->
-                    <div class="trail-info">
-                      <span data-bind="style: { display: activity_type_name === 'mountain biking' ? 'inline-block' : 'none' }">
-                        <svg class="trail-type" viewBox="0 0 24 24">
-                          <path fill="#000000" d="M5,20.5A3.5,3.5 0 0,1 1.5,17A3.5,3.5 0 0,1 5,13.5A3.5,3.5 0 0,1 8.5,17A3.5,3.5 0 0,1 5,20.5M5,12A5,5 0 0,0 0,17A5,5 0 0,0 5,22A5,5 0 0,0 10,17A5,5 0 0,0 5,12M14.8,10H19V8.2H15.8L13.86,4.93C13.57,4.43 13,4.1 12.4,4.1C11.93,4.1 11.5,4.29 11.2,4.6L7.5,8.29C7.19,8.6 7,9 7,9.5C7,10.13 7.33,10.66 7.85,10.97L11.2,13V18H13V11.5L10.75,9.85L13.07,7.5M19,20.5A3.5,3.5 0 0,1 15.5,17A3.5,3.5 0 0,1 19,13.5A3.5,3.5 0 0,1 22.5,17A3.5,3.5 0 0,1 19,20.5M19,12A5,5 0 0,0 14,17A5,5 0 0,0 19,22A5,5 0 0,0 24,17A5,5 0 0,0 19,12M16,4.8C17,4.8 17.8,4 17.8,3C17.8,2 17,1.2 16,1.2C15,1.2 14.2,2 14.2,3C14.2,4 15,4.8 16,4.8Z" />
-                        </svg>
-                      </span>
-                      <span data-bind="style: { display: activity_type_name === 'hiking' ? 'inline-block' : 'none' }">
-                        <svg class="trail-type" viewBox="0 0 24 24">
-                          <path fill="#000000" d="M14.12,10H19V8.2H15.38L13.38,4.87C13.08,4.37 12.54,4.03 11.92,4.03C11.74,4.03 11.58,4.06 11.42,4.11L6,5.8V11H7.8V7.33L9.91,6.67L6,22H7.8L10.67,13.89L13,17V22H14.8V15.59L12.31,11.05L13.04,8.18M14,3.8C15,3.8 15.8,3 15.8,2C15.8,1 15,0.2 14,0.2C13,0.2 12.2,1 12.2,2C12.2,3 13,3.8 14,3.8Z" />
-                        </svg>
-                      </span>
-                      <span class="badge"><span class="trail-length" data-bind="text: length" ></span> miles</span>
-                      <span><a data-bind="attr: { href: url }" class="btn btn-default btn-xs" target="_blank">More info</a></span>
-                    </div>
-                    <p data-bind="html: description" class="description text-justify"></p>
-                  <!-- /ko -->
-                  <!-- ko if: trails !== null && trails.length == 0 -->
-                    <p class="description text-justify">Could not find any trails near <span data-bind="text: title"></span>.</p>
-                  <!-- /ko -->
-                </div>
-                <div class="panel-footer"><small>Copyright 2012 TrailAPI.</small></div>
-              </div>
-
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h3 class="panel-title">Related Wikipedia Articles</h3>
-                </div>
-                <div class="panel-body">
-                  <!-- ko foreach: articles -->
-                    <a data-bind="text: title, attr: { href: url }" target="_blank" class="wikipedia-article"></a>
-                    <p data-bind="text: description" class="description text-justify"></p>
-                  <!-- /ko -->
-                  <!-- ko if: articles !== null && articles.length == 0 -->
-                    <p class="description text-justify">Looks like there are no Wikipedia articles about <span data-bind="text: title"></span>.</p>
-                  <!-- /ko -->
-                </div>
-                <div class="panel-footer"><small>Text is available under the <a href="https://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike License</a>; additional terms may apply. See <a href="https://wikimediafoundation.org/wiki/Terms_of_Use">Terms of Use</a> for details.</small></div>
-              </div>
-
-            <!-- /ko -->
-          </div>
-        </div>
+      </div>
+      <div data-bind="style: { display: displayActionButtons() ? 'inherit' : 'none' }" class="col-sm-12 text-center action-footer">
+        <!-- ko with: currentSpot -->
+        <a data-bind="click: $parent.saveSpot, css: { disabled: typeof firebaseKey != 'undefined' }, text: typeof firebaseKey != 'undefined' ? 'Trail Saved' : 'Save Trail'" class="btn btn-success btn-margin">Save</a>
+        <a data-bind="click: $parent.deleteSpot" class="btn btn-danger btn-margin">Delete Trail</a>
+        <!-- /ko -->
       </div>
     </div>
   </main>
